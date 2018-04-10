@@ -12,6 +12,7 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.AudioSystem;
 import java.io.IOException;
 import java.net.URL;
+import javax.sound.sampled.FloatControl;
 /**
  *
  * @author antoniomejorado
@@ -38,13 +39,32 @@ public class SoundClip {
     /** 
      * Constructor con parametros, que carga manda llamar a load
      * esto carga el archivo de sonido.
-     * @param filename es el <code>String</code> del archivo.
+     * @param path es el <code>String</code> del archivo.
      */
-    public SoundClip(String filename) {
-        //Llama al constructor default.
-        this();
-        //Carga el archivo de sonido.
-        load(filename);
+    public SoundClip(String path, float offset, boolean loop) {
+       this();	    // Calls default constructor
+
+	// Attempt to get resource and save as URL
+	URL url = null;
+	try {
+	    url = this.getClass().getResource(path);
+	} catch (Exception e) {
+	    System.out.println("" + path + " doesn't exist!");
+	}
+
+	// Attempt to load sound
+	try {
+	    sample = AudioSystem.getAudioInputStream(url);
+	    clip.open(sample);
+	} catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
+	    System.err.println("Error loading file! " + e);
+	}
+
+	// Modify volume of sound
+	FloatControl fc = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+	fc.setValue(offset);
+
+	this.looping = loop;
     }
 
     /** 

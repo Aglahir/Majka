@@ -21,7 +21,7 @@ public class Player extends Item{
      * @param x the x position of the player
      * @param y the y position of the player
      * @param width the width of the player
-     * @param height the hheight of the player
+     * @param height the height of the player
      * @param game the game
      * @param vel the velocity
      */
