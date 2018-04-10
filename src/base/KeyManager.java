@@ -6,17 +6,20 @@ import java.awt.event.KeyListener;
 
 public class KeyManager implements KeyListener{
 
-    public boolean Q;      //flag to move up the player
-    public boolean E;      //flag to move down the player
-    public boolean A;      //flag to move left the player
-    public boolean D;      //flag to move right the player
-    public boolean P;      //flag to pause game
-    public boolean R;      //flag to restart game
-    public boolean S;      //floag to save
-    public boolean L;      //floag to load
-    public boolean Left;   //flag to left 
-    public boolean Right;  //flag to right
-    public boolean Up;     //flag to up
+    public boolean W;           //Key to move up
+    public boolean A;           //Key to move left
+    public boolean S;           //Key to move down
+    public boolean D;           //Key to move right
+    public boolean Q;           //Key to change weapon
+    public boolean E;           //Key to change weapon 2
+    public boolean P;           //Key to pause the game
+    public boolean Enter;       //Key to continue
+    public boolean Escape;      //Key to return
+    public boolean Up;          //Key to attack up
+    public boolean Left;        //Key to attack left    
+    public boolean Down;        //Key to attack down
+    public boolean Right;       //Key to attack right
+    public boolean Space;       //space key 
     
     private boolean keys[]; //to store all the flags for every key
     
@@ -32,6 +35,11 @@ public class KeyManager implements KeyListener{
     public void keyTyped(KeyEvent e) {
     }
 
+    /**
+     * Void to identify wich key is pressed
+     * 
+     * @param e the event of a key pressed in the keyboard 
+     */
     @Override
     public void keyPressed(KeyEvent e) {
         //set true to every key pressed
@@ -41,6 +49,10 @@ public class KeyManager implements KeyListener{
         }
     }
 
+    /**
+     *  Void to see if a key is released
+     * @param e the event on the keyboard
+     */
     @Override
     public void keyReleased(KeyEvent e) {
         //set false to every key released
@@ -61,27 +73,20 @@ public class KeyManager implements KeyListener{
      */
     public void tick()
     {
-        E = keys[KeyEvent.VK_E];
-        A = keys[KeyEvent.VK_A];
-        Q = keys[KeyEvent.VK_Q];
-        D = keys[KeyEvent.VK_D];
-        P = keys[KeyEvent.VK_P];
-        R = keys[KeyEvent.VK_R];
+        W = keys[KeyEvent.VK_W];
+        A = keys[KeyEvent.VK_A];        
         S = keys[KeyEvent.VK_S];
-        L = keys[KeyEvent.VK_L];
-        Left = keys[KeyEvent.VK_LEFT];
-        Right = keys[KeyEvent.VK_RIGHT];
-        Up = keys[KeyEvent.VK_UP];
-    }
-    
-    public boolean isS()
-    {
-        return keys[KeyEvent.VK_S];
-    }
-    
-    public boolean isL()
-    {
-        return keys[KeyEvent.VK_L];
+        D = keys[KeyEvent.VK_D];
+        Q = keys[KeyEvent.VK_Q];
+        E = keys[KeyEvent.VK_E];
+        P = keys[KeyEvent.VK_P];
+        Up     = keys[KeyEvent.VK_UP];
+        Left   = keys[KeyEvent.VK_LEFT];
+        Down   = keys[KeyEvent.VK_DOWN];        
+        Right  = keys[KeyEvent.VK_RIGHT];        
+        Enter  = keys[KeyEvent.VK_ENTER];        
+        Escape = keys[KeyEvent.VK_ESCAPE];
+        Space  = keys[KeyEvent.VK_SPACE];
     }
     
 }

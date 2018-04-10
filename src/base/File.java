@@ -14,10 +14,14 @@ import videogame.Game;
 
 /**
  *
- * @author David Herrera
+ * @author Hack'n Matata
  */
 public class File {
     
+    /**
+     * Method to load the file
+     * @param game the game
+     */
     public static void loadFile(Game game){
         BufferedReader br = null;
         FileReader fr = null;
@@ -32,6 +36,10 @@ public class File {
         }
     }
     
+    /**
+     * Method to save the file
+     * @param game the game
+     */
     public static void saveFile(Game game){
         try{
             PrintWriter printWriter = new PrintWriter(new FileWriter("save.txt"));

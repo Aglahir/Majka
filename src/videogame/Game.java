@@ -72,16 +72,14 @@ public class Game implements Runnable{
                 {
                     delta --;
                     
-                    getKeyManager().tick();
-                    if(getKeyManager().R){
-                        //restartGame();
-                    }
+                    getKeyManager().tick();                    
                     if(!getKeyManager().P && !gameOver && !gameWon)
                     {
                          tick();
                     }
                     else
                     {
+                        /*
                         if(getKeyManager().isS())
                         {
                             File.saveFile(this);
@@ -90,6 +88,7 @@ public class Game implements Runnable{
                         {
                             File.loadFile(this);
                         }
+                        */
                     }
                     render();
                  } 
@@ -108,6 +107,9 @@ public class Game implements Runnable{
        
     }
     
+    /**
+     * Method to load everything to draw in the display
+     */
     private void render()
     {
         //get the buffer strategy from the display
@@ -171,7 +173,7 @@ public class Game implements Runnable{
     {
         
     }
-    ¨*/
+    */
     
     /**
      * To get the width of the game window

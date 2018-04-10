@@ -7,7 +7,7 @@ import java.awt.image.BufferedImage;
 
 /**
  *
- * @author Aglahir
+ * @author Hack'n matata
  */
 public class Assets {
     

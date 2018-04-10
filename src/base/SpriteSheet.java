@@ -5,7 +5,7 @@ import java.awt.image.BufferedImage;
 
 /**
  * 
- * @author Aglahir Jiménez Flórez
+ * @author Hack'n Matata
  */
 public class SpriteSheet {
 
@@ -20,6 +20,14 @@ public class SpriteSheet {
         this.sheet = sheet;
     }
     
+    /**
+     * 
+     * @param x
+     * @param y
+     * @param width
+     * @param height
+     * @return <code> BufferedImage </code> cropped
+     */
     public BufferedImage crop(int x, int y, int width, int height){
         return sheet.getSubimage(x, y, width, height);
     }

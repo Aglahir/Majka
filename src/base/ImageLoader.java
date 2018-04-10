@@ -11,7 +11,7 @@ import javax.imageio.ImageIO;
 
 /**
  *
- * @author Aglahir
+ * @author Hack'n Matata
  */
 public class ImageLoader {
     
