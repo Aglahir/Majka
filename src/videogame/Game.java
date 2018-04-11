@@ -2,6 +2,7 @@ package videogame;
 
 import base.Display;
 import base.File;
+import base.Item;
 import base.KeyManager;
 import java.awt.Color;
 import java.awt.Font;
@@ -22,19 +23,18 @@ public class Game implements Runnable{
     private Thread thread;          // thread to create the game
     private boolean running;        // to set the game
     private KeyManager keyManager;  // to manage the keyboard
+    private Player player;          // first player
     private int fps = 60;           // set FPS for the thread running
-    private boolean gameOver = false;
-    private boolean gameWon = false;
-    private boolean enemiesMovingRight = true;  //check if moving right with a time
-   
+    private int shootTimer = fps/2;   // delay to shoot
+    private ArrayList<Mob> hadoukens;      // simple hadoukens list
     private void init()
     {
         display = new Display(title,getWidth(),getHeight());            //Display instanciated
         Assets.init();                                                  //Assets loaded
-       
+        hadoukens = new ArrayList<>();
+        player = new Player(getWidth()/2,getHeight()/2,100,100,this);
+        
         display.getJframe().addKeyListener(keyManager);                 //make the keyManager listens to keys
-       
-       
     }
     
     /**
@@ -73,7 +73,7 @@ public class Game implements Runnable{
                     delta --;
                     
                     getKeyManager().tick();                    
-                    if(!getKeyManager().P && !gameOver && !gameWon)
+                    if(!getKeyManager().P)
                     {
                          tick();
                     }
@@ -104,7 +104,19 @@ public class Game implements Runnable{
      */
     private void tick()
     {   
-       
+       if(shootTimer>0)shootTimer --;
+       player.tick();
+       for(int i = 0;i<hadoukens.size();i++){
+           hadoukens.get(i).tick();
+           if(outOfBounds(hadoukens.get(i))){
+               hadoukens.remove(i);
+               i--;
+           }
+       }
+    }
+    
+    public boolean outOfBounds(Item item){
+        return (item.getX()<0 || item.getX()+item.getWidth()>getWidth() || item.getY()<0 || item.getY()+item.getHeight()>getHeight());
     }
     
     /**
@@ -129,7 +141,11 @@ public class Game implements Runnable{
             
             //Insert code here!!
             
-            
+            g.drawImage(Assets.map, 0, 0, getWidth(), getHeight(), null);
+            player.render(g);
+            for(int i = 0;i<hadoukens.size();i++){
+                hadoukens.get(i).render(g);
+            }
             
             bs.show();
             g.dispose();
@@ -168,12 +184,6 @@ public class Game implements Runnable{
         }
     }
     
-    /*
-    private void restartGame()
-    {
-        
-    }
-    */
     
     /**
      * To get the width of the game window
@@ -200,5 +210,14 @@ public class Game implements Runnable{
         return keyManager;
     }
   
+    public Player getPlayer(){
+        return this.player;
+    }
     
+    public void addHadouken(int x, int y, int w, int h, int direction){
+        if(shootTimer<=0){
+            hadoukens.add(new Mob(x,y,w,h,this,direction));
+            shootTimer = fps;
+        }
+    }
 }

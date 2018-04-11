@@ -9,7 +9,7 @@ public class VideoGame {
      */
     public static void main(String[] args) {
         //creating a Game Object
-        Game g = new Game("MAJKA",1920,1080);
+        Game g = new Game("MAJKA",1366,768);
         //initializing the game
         g.start();
     }

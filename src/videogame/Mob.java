@@ -14,7 +14,8 @@ import java.awt.Graphics;
 public class Mob extends Item{
     
     private Game game;
-    
+    private int direction;
+    private int speed;
     
     /**
      * 
@@ -23,21 +24,36 @@ public class Mob extends Item{
      * @param width the width of the mob
      * @param height the height of the mob
      * @param game the game
-     * @param vel the velocity
+     * @param direction the direction
      */
-    public Mob(int x, int y, int width, int height, Game game, int vel){
+    public Mob(int x, int y, int width, int height, Game game, int direction){
         super(x, y, width, height);
         this.game = game;
-        
+        this.direction = direction;
+        this.speed = 15;
     }
     
     @Override
     public void tick() {
-        
+        switch(direction){
+            case 1: 
+                    setX(getX()-speed);
+                    break;
+            case 2: 
+                    setY(getY()-speed);
+                    break;
+            case 3: 
+                    setX(getX()+speed);
+                    break;
+            case 4: 
+                    setY(getY()+speed);
+                    break;
+        }
     }
 
     @Override
     public void render(Graphics g) {
-       
+        g.setColor(Color.CYAN);
+        g.fillOval(getX(), getY(), getWidth(), getHeight());
     }
 }
