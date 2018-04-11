@@ -59,10 +59,15 @@ public class Player extends Item{
                     minMapPosX += (float)speed/37;
                     actualAnimation.tick();
                     break;
+            
+            default:
+                    actualAnimation = Assets.playerIddleBasic;
+                    actualAnimation.tick();
+                    break;
         }
         
-        if(game.getKeyManager().W && !game.getKeyManager().S){direction=2;}
-        else if(!game.getKeyManager().W && game.getKeyManager().S){direction=4;}
+        if(game.getKeyManager().W && !game.getKeyManager().S){actualAnimation = Assets.playerUBasic;direction=2;}
+        else if(!game.getKeyManager().W && game.getKeyManager().S){actualAnimation = Assets.playerDBasic;direction=4;}
         
         switch(direction){
             case 2: 

@@ -217,7 +217,7 @@ public class Game implements Runnable{
     public void addHadouken(int x, int y, int w, int h, int direction){
         if(shootTimer<=0){
             hadoukens.add(new Mob(x,y,w,h,this,direction));
-            shootTimer = fps;
+            shootTimer = 0;
         }
     }
 }
