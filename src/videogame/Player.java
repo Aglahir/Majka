@@ -19,6 +19,8 @@ public class Player extends Item{
     private int direction;              // 0-Iddle 1-Left 2-Up 3-Right 4-Down
     private float minMapPosX, minMapPosY; // positions of point on screen for the mini map player
     private int lifes;
+    private Collider collider;
+    
     /**
      * 
      * @param x the x position of the player
@@ -37,6 +39,7 @@ public class Player extends Item{
         this.minMapPosX = (float)this.game.getWidth()-218;
         this.minMapPosY = 128f;
         this.lifes = 3;
+        this.collider = new Collider(getX()+getWidth()/2,getY()+getHeight()/2,getWidth()/2);
     }
     
     /**
@@ -44,7 +47,7 @@ public class Player extends Item{
      */
     private void checkDirection(){
         direction=0;
-        
+        double tmp1 = Math.random()*50-25,tmp2 = Math.random()*5;
         if(game.getKeyManager().D && !game.getKeyManager().A){actualAnimation = Assets.playerRBasic;direction=3;}
         else if(!game.getKeyManager().D && game.getKeyManager().A){actualAnimation = Assets.playerLBasic;direction=1;}
         
@@ -52,17 +55,16 @@ public class Player extends Item{
             case 1: 
                     setX(getX()-speed);
                     minMapPosX -= (float)speed/37;
-                    actualAnimation.tick();
+                    game.createParticle(new Popup(getX()+getWidth()/2,getY()+getHeight()+(int)tmp1,(int)tmp2,(int)tmp2,4,50,10));
                     break;
             case 3: 
                     setX(getX()+speed);
                     minMapPosX += (float)speed/37;
-                    actualAnimation.tick();
+                    game.createParticle(new Popup(getX()+getWidth()/2,getY()+getHeight()+(int)tmp1,(int)tmp2,(int)tmp2,4,50,10));
                     break;
             
             default:
                     actualAnimation = Assets.playerIddleBasic;
-                    actualAnimation.tick();
                     break;
         }
         
@@ -73,14 +75,24 @@ public class Player extends Item{
             case 2: 
                     setY(getY()-speed);
                     minMapPosY -= (float)speed/31;
-                    actualAnimation.tick();
+                    game.createParticle(new Popup(getX()+(int)tmp1+getWidth()/2,getY()+getHeight()+(int)tmp1,(int)tmp2,(int)tmp2,4,50,10));
                     break;
             case 4: 
                     setY(getY()+speed);
                     minMapPosY += (float)speed/31;
-                    actualAnimation.tick();
+                    game.createParticle(new Popup(getX()+(int)tmp1+getWidth()/2,getY(),(int)tmp2,(int)tmp2,4,50,10));
                     break;
         }
+        
+        actualAnimation.tick();
+    }
+    
+    public Collider getCollider(){
+        return this.collider;
+    }
+    
+    public boolean checkCollision(Collider col){
+        return collider.checkCollision(col);
     }
     
     @Override
@@ -94,6 +106,9 @@ public class Player extends Item{
             game.addHadouken(getX(), getY(), getWidth(), getHeight(), 3);
         if(game.getKeyManager().Down)
             game.addHadouken(getX(), getY(), getWidth(), getHeight(), 4);
+        
+        collider.setX(getX()+getWidth()/2);
+        collider.setY(getY()+getHeight()/2);
     }
 
     @Override

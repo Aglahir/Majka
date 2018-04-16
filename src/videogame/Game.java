@@ -26,14 +26,20 @@ public class Game implements Runnable{
     private Player player;          // first player
     private int fps = 60;           // set FPS for the thread running
     private int shootTimer = fps/2;   // delay to shoot
+    private int spacebarCooldown = 30;
     private ArrayList<Mob> hadoukens;      // simple hadoukens list
+    private ArrayList<Popup> popups;       // simple popups list
+    private ArrayList<Spaniard> spaniards; // simple spaniard list
     private void init()
     {
         display = new Display(title,getWidth(),getHeight());            //Display instanciated
         Assets.init();                                                  //Assets loaded
         hadoukens = new ArrayList<>();
+        popups = new ArrayList<>();
+        spaniards = new ArrayList<>();
         player = new Player(getWidth()/2,getHeight()/2,100,100,this);
         
+        spaniards.add(new Spaniard(800, 300,100, 100, this));
         display.getJframe().addKeyListener(keyManager);                 //make the keyManager listens to keys
     }
     
@@ -103,9 +109,24 @@ public class Game implements Runnable{
      * Is what happens in background for operations to be done
      */
     private void tick()
-    {   
+    {  
+       if(spacebarCooldown == 0){
+            if(getKeyManager().Space){
+                spacebarCooldown = 30;
+                double tmp1 = Math.random()*50-25,
+                       tmp2 = Math.random()*3 +1,
+                       tmp3 = Math.random()*50-25;
+                popups.add(new Popup(getPlayer().getX()+(int)tmp1,getPlayer().getY()+(int)tmp3,10+(int)tmp1,10+(int)tmp1,(int)tmp2,100,9));
+            }
+       }else spacebarCooldown--;
+       
        if(shootTimer>0)shootTimer --;
+       
        player.tick();
+       
+       for(int i = 0;i<spaniards.size();i++){
+           spaniards.get(i).tick();
+       }
        for(int i = 0;i<hadoukens.size();i++){
            hadoukens.get(i).tick();
            if(outOfBounds(hadoukens.get(i))){
@@ -113,6 +134,10 @@ public class Game implements Runnable{
                i--;
            }
        }
+    }
+    
+    public void createParticle(Popup popup){
+        popups.add(popup);
     }
     
     public boolean outOfBounds(Item item){
@@ -142,9 +167,23 @@ public class Game implements Runnable{
             //Insert code here!!
             
             g.drawImage(Assets.map, 0, 0, getWidth(), getHeight(), null);
-            player.render(g);
+            
+            
+            //HADOUKENS!!!
             for(int i = 0;i<hadoukens.size();i++){
                 hadoukens.get(i).render(g);
+            }
+            
+            for(int i = 0;i<spaniards.size();i++){
+                spaniards.get(i).render(g);
+            }
+            
+            player.render(g);
+            
+            // POPUPS!!!
+            for(int i=0;i<popups.size();i++){
+                popups.get(i).render(g);
+                if(popups.get(i).hasEnded())popups.remove(i);
             }
             
             bs.show();

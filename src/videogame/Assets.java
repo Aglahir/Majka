@@ -13,7 +13,8 @@ import java.awt.image.BufferedImage;
 public class Assets {
     
     public static Animation playerLBasic,playerRBasic,playerUBasic,playerDBasic, playerIddleBasic;
-    public static BufferedImage map, minimap;
+    public static Animation spaniardLBasic,spaniardRBasic,spaniardUBasic,spaniardDBasic, spaniardIddleBasic;
+    public static BufferedImage map, minimap, boom, pow, bam, cloudParticles;
     public static SoundClip music;
     public static SoundClip shoot, hit, ouchEnemy, ouchPlayer;
     
@@ -24,8 +25,12 @@ public class Assets {
     {
         try{
             BufferedImage up[],down[],left[],right[],iddleBasic[];
-            BufferedImage upM[],downM[],leftM[],rightM[];
-            BufferedImage upB[],downB[],leftB[],rightB[];
+            BufferedImage upS[],downS[],leftS[],rightS[], iddleBasicS[];
+            
+            boom = ImageLoader.loadImage("/images/boom.png");
+            pow = ImageLoader.loadImage("/images/pow.png");
+            bam = ImageLoader.loadImage("/images/bam.png");
+            cloudParticles = ImageLoader.loadImage("/images/cloud_particles.png");
             
             SpriteSheet sprites1 = new SpriteSheet(ImageLoader.loadImage("/images/playerLeftBasic.png"));
             SpriteSheet sprites2 = new SpriteSheet(ImageLoader.loadImage("/images/playerRightBasic.png"));
@@ -55,6 +60,10 @@ public class Assets {
             playerRBasic = new Animation(right,30);
             playerIddleBasic = new Animation(iddleBasic,30);
             
+            spaniardLBasic = new Animation(left,30);
+            spaniardRBasic = new Animation(right,30);
+            spaniardIddleBasic = new Animation(iddleBasic,30);
+            
             sprites1 = new SpriteSheet(ImageLoader.loadImage("/images/PlayerUpBasic.png"));
             sprites2 = new SpriteSheet(ImageLoader.loadImage("/images/playerDownBasic.png"));
             
@@ -68,14 +77,8 @@ public class Assets {
             playerUBasic = new Animation(up,70);
             playerDBasic = new Animation(down,70);
             
-            /*            
-            
-            music = new SoundClip("/assets/sounds/music.wav", -3f, true);
-            shoot = new SoundClip("/assets/sounds/music.wav", 5f, false);
-            hit = new SoundClip("/assets/sounds/music.wav", 5f, false);
-            ouchEnemy = new SoundClip("/assets/sounds/music.wav", 5f, false);
-            ouchPlayer = new SoundClip("/assets/sounds/music.wav", 5f, false);
-            }*/
+            spaniardUBasic = new Animation(up,70);
+            spaniardDBasic = new Animation(down,70);
         }
         catch(Exception e)
         {
