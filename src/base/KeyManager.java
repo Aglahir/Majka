@@ -13,6 +13,7 @@ public class KeyManager implements KeyListener{
     public boolean Q;           //Key to change weapon
     public boolean E;           //Key to change weapon 2
     public boolean P;           //Key to pause the game
+    public boolean M;           //Key to show the instructive of the game
     public boolean Enter;       //Key to continue
     public boolean Escape;      //Key to return
     public boolean Up;          //Key to attack up
@@ -43,7 +44,7 @@ public class KeyManager implements KeyListener{
     @Override
     public void keyPressed(KeyEvent e) {
         //set true to every key pressed
-        if(e.getKeyCode() != KeyEvent.VK_P)
+        if(e.getKeyCode() != KeyEvent.VK_P && e.getKeyCode() != KeyEvent.VK_M)
         {
             keys[e.getKeyCode()] = true;
         }
@@ -56,7 +57,7 @@ public class KeyManager implements KeyListener{
     @Override
     public void keyReleased(KeyEvent e) {
         //set false to every key released
-        if(e.getKeyCode() == KeyEvent.VK_P)
+        if(e.getKeyCode() == KeyEvent.VK_P || e.getKeyCode() == KeyEvent.VK_M)
         {
             if(keys[e.getKeyCode()])
                 keys[e.getKeyCode()] = false;
@@ -80,6 +81,13 @@ public class KeyManager implements KeyListener{
         Q = keys[KeyEvent.VK_Q];
         E = keys[KeyEvent.VK_E];
         P = keys[KeyEvent.VK_P];
+        M = keys[KeyEvent.VK_M];
+        if(P){
+            keys[KeyEvent.VK_P] = false;
+        }
+        if(M){
+            keys[KeyEvent.VK_M] = false;
+        }
         Up     = keys[KeyEvent.VK_UP];
         Left   = keys[KeyEvent.VK_LEFT];
         Down   = keys[KeyEvent.VK_DOWN];        
