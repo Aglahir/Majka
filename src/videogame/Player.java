@@ -53,12 +53,12 @@ public class Player extends Item{
         
         switch(direction){
             case 1: 
-                    setX(getX()-speed);
+                    if(getX()>=game.getX0())setX(getX()-speed);
                     minMapPosX -= (float)speed/37;
                     game.createParticle(new Popup(getX()+getWidth()/2,getY()+getHeight()+(int)tmp1,(int)tmp2,(int)tmp2,4,50,10));
                     break;
             case 3: 
-                    setX(getX()+speed);
+                    if(getX()<=game.getXf())setX(getX()+speed);
                     minMapPosX += (float)speed/37;
                     game.createParticle(new Popup(getX()+getWidth()/2,getY()+getHeight()+(int)tmp1,(int)tmp2,(int)tmp2,4,50,10));
                     break;
@@ -73,12 +73,12 @@ public class Player extends Item{
         
         switch(direction){
             case 2: 
-                    setY(getY()-speed);
+                    if(getY()>=game.getY0())setY(getY()-speed);
                     minMapPosY -= (float)speed/31;
                     game.createParticle(new Popup(getX()+(int)tmp1+getWidth()/2,getY()+getHeight()+(int)tmp1,(int)tmp2,(int)tmp2,4,50,10));
                     break;
             case 4: 
-                    setY(getY()+speed);
+                    if(getY()<=game.getYf())setY(getY()+speed);
                     minMapPosY += (float)speed/31;
                     game.createParticle(new Popup(getX()+(int)tmp1+getWidth()/2,getY(),(int)tmp2,(int)tmp2,4,50,10));
                     break;

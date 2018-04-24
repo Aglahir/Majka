@@ -14,9 +14,13 @@ public class Assets {
     
     public static Animation playerLBasic,playerRBasic,playerUBasic,playerDBasic, playerIddleBasic;
     public static Animation spaniardLBasic,spaniardRBasic,spaniardUBasic,spaniardDBasic, spaniardIddleBasic;
-    public static BufferedImage map, minimap, boom, pow, bam, cloudParticles, pause, mainMenu, manual;
+    public static BufferedImage map, minimap, boom, pow, bam, cloudParticles, pause, mainMenu, manual,door,door1;
     public static SoundClip music;
     public static SoundClip shoot, hit, ouchEnemy, ouchPlayer;
+    
+    public static BufferedImage getMapImage(int index){
+        return ImageLoader.loadImage("/images/Map"+index+".png");
+    }
     
     /**
      * initializing the assets of the game
@@ -34,6 +38,8 @@ public class Assets {
             pause = ImageLoader.loadImage("/images/Pausa1.png");
             mainMenu = ImageLoader.loadImage("/images/MainMenu1.png");
             manual = ImageLoader.loadImage("/images/tutorial.png");
+            door = ImageLoader.loadImage("/images/door.png");
+            door1 = ImageLoader.loadImage("/images/door1.png");
             
             SpriteSheet sprites1 = new SpriteSheet(ImageLoader.loadImage("/images/playerLeftBasic.png"));
             SpriteSheet sprites2 = new SpriteSheet(ImageLoader.loadImage("/images/playerRightBasic.png"));

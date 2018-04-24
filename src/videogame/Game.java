@@ -9,6 +9,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 import java.util.ArrayList;
+import java.util.concurrent.ThreadLocalRandom;
 import javax.swing.JOptionPane;
 
 
@@ -24,12 +25,17 @@ public class Game implements Runnable{
     private boolean running;        // to set the game
     private boolean pause;          // to pause the game
     private boolean manual;         // to show the manual of the game
+    private boolean inDoor;
     private KeyManager keyManager;  // to manage the keyboard
     private MouseManager mouseManager; // to manage the mouse
     private Player player;          // first player
     private int fps = 60;           // set FPS for the thread running
     private int shootTimer = fps/2;   // delay to shoot
     private int spacebarCooldown = 30;
+    private int level=0;              //for the level of the map
+    private int x0,xf,y0,yf,dx,dy,px,py;  //data for the map limits and the doors
+    private int enemies;            //number of enemies in each map
+    private Map map;                //to read the data of every map
     private ArrayList<Mob> hadoukens;      // simple hadoukens list
     private ArrayList<Popup> popups;       // simple popups list
     private ArrayList<Spaniard> spaniards; // simple spaniard list
@@ -38,17 +44,35 @@ public class Game implements Runnable{
     private void init()
     {
         display = new Display(title,getWidth(),getHeight());            //Display instanciated
-        Assets.init();                                                  //Assets loaded
+        Assets.init();                                                  //Assets loaded        
         hadoukens = new ArrayList<>();
         popups = new ArrayList<>();
-        spaniards = new ArrayList<>();
-        player = new Player(getWidth()/2,getHeight()/2,100,100,this);
-        spaniards.add(new Spaniard(800, 300,100, 100, this));
+        spaniards = new ArrayList<>();   
+        loadMap();
         display.getJframe().addKeyListener(keyManager);                 //make the keyManager listens to keys
         display.getJframe().addMouseListener(mouseManager);
         display.getJframe().addMouseMotionListener(mouseManager);
         display.getCanvas().addMouseListener(mouseManager);
         display.getCanvas().addMouseMotionListener(mouseManager);
+    }
+    
+    private void  loadMap(){
+        map = new Map(level);
+        x0 = map.getX0();
+        xf = map.getXf();
+        y0 = map.getY0();
+        yf = map.getYf();
+        dx = map.getDoorx();
+        dy = map.getDoory();
+        px = map.getPlayerx();
+        py = map.getPlayery();
+        enemies = map.getEnem();
+        player = new Player(px,py,100,100,this);
+        for(int i=0; i<enemies; i++){
+            int enemX = ThreadLocalRandom.current().nextInt(x0, xf + 1);
+            int enemY = ThreadLocalRandom.current().nextInt(y0, yf + 1);
+            spaniards.add(new Spaniard(enemX, enemY,100, 100, this));
+        }
     }
     
     /**
@@ -110,6 +134,7 @@ public class Game implements Runnable{
      */
     private void tick()
     {
+        System.out.println("X: "+player.getX()+" Y: "+player.getY());
         if(this.getMouseManager().isIzquierdo()){
             if(this.getMouseManager().getX()>=482 && this.getMouseManager().getX() <= 891 && this.getMouseManager().getY()>=315 && this.getMouseManager().getY() <= 392)
                 state = STATE.game;
@@ -136,7 +161,17 @@ public class Game implements Runnable{
 
             if(shootTimer>0)shootTimer --;
 
+            System.out.println("Door X = "+dx+" Door Y = "+dy);
             player.tick();
+            if(player.getX() <= dx+160 && player.getX()>=dx-160 &&player.getY()<=dy+160 && player.getY()>=dy-160){
+                inDoor=true;
+                if(getKeyManager().Enter){                                    
+                    level++;
+                    loadMap();
+                }
+            }else{
+                inDoor=false;
+            }
 
             for(int i = 0;i<spaniards.size();i++){
                 spaniards.get(i).tick();
@@ -182,6 +217,8 @@ public class Game implements Runnable{
             //Insert code here!!
             if(isPaused()){ //for displaying the paused image
                 g.drawImage(Assets.map, 0, 0, getWidth(), getHeight(), null);
+                if(dx==1370 || dx ==19)g.drawImage(Assets.door, dx, dy, -60, 200, null);
+                else g.drawImage(Assets.door1, dx, dy, 200, 60, null);
                 for(int i = 0;i<spaniards.size();i++){
                     spaniards.get(i).render(g);
                 }
@@ -196,7 +233,14 @@ public class Game implements Runnable{
                 g.drawImage(Assets.mainMenu,0,0,this.getWidth(),this.getHeight(),null);
             } else if(!isPaused()){
                 g.drawImage(Assets.map, 0, 0, getWidth(), getHeight(), null);
+                if(dx==1370 || dx ==19)g.drawImage(Assets.door, dx, dy, -60, 200, null);
+                else g.drawImage(Assets.door1, dx, dy, 200, 60, null);
             
+                if(inDoor){
+                    g.setColor(Color.white);
+                    g.drawString("Press ENTER to use the door", player.getX(), player.getY()+120);
+                }
+                    
                 //HADOUKENS!!!
                 for(int i = 0;i<hadoukens.size();i++){
                     hadoukens.get(i).render(g);
@@ -308,4 +352,30 @@ public class Game implements Runnable{
             shootTimer = 0;
         }
     }
+
+    public int getX0() {
+        return x0;
+    }
+
+    public int getXf() {
+        return xf;
+    }
+
+    public int getY0() {
+        return y0;
+    }
+
+    public int getYf() {
+        return yf;
+    }
+
+    public int getDx() {
+        return dx;
+    }
+
+    public int getDy() {
+        return dy;
+    }
+    
+    
 }

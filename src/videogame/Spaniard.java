@@ -31,7 +31,7 @@ public class Spaniard extends Item{
         super(x, y, width, height);
         this.game = game;
         this.actualAnimation = Assets.spaniardRBasic;
-        this.speed = 6;
+        this.speed = 3;
         this.direction = 2;
         this.life = 100;
         this.collider = new Collider(getX()+getWidth()/2,getY()+getHeight()/2,getWidth()/2);
@@ -52,7 +52,7 @@ public class Spaniard extends Item{
                     break;
             case 3: 
                     setX(getX()+speed);
-                    
+                    actualAnimation = Assets.spaniardRBasic;
                     break;
             default:
                     actualAnimation = Assets.spaniardIddleBasic;
