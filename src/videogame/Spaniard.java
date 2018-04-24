@@ -33,7 +33,7 @@ public class Spaniard extends Item{
         this.actualAnimation = Assets.spaniardRBasic;
         this.speed = 3;
         this.direction = 2;
-        this.life = 100;
+        this.life = 1000;
         this.collider = new Collider(getX()+getWidth()/2,getY()+getHeight()/2,getWidth()/2);
     }
     
@@ -79,6 +79,16 @@ public class Spaniard extends Item{
     public Collider getCollider(){
         return this.collider;
     }
+
+    public int getLife() {
+        return life;
+    }
+
+    public void setLife(int life) {
+        this.life = life;
+    }
+    
+    
     
     @Override
     public void tick() {

@@ -15,15 +15,15 @@ public class Map {
     private int x0,xf,y0,yf,doorx,doory,playerx,playery,enem;
     int index;
     private BufferedImage image;
-    private static int playerX[]={611,660};
-    private static int playerY[]={336,600};
-    private static int x0s[]={27,27};
-    private static int xfs[]={1235,1235};
-    private static int y0s[]={8,8};
-    private static int yfs[]={608,608};
-    private static int doorsx[]={611,1370};
-    private static int doorsy[]={5,300};
-    private static int enemies[]={0,12};
+    private static int playerX[]={611,660,50,10,660};
+    private static int playerY[]={336,608,336,608,608};
+    private static int x0s[]={27,27,27,8,27};
+    private static int xfs[]={1235,1235,1235,240,1235};
+    private static int y0s[]={8,8,152,8,8};
+    private static int yfs[]={608,608,400,608,608};
+    private static int doorsx[]={611,1370,1370,90,-500};
+    private static int doorsy[]={5,300,260,5,-500};
+    private static int enemies[]={0,1,0,2,1};
     
     public Map(int index){        
         this.index = index;        
