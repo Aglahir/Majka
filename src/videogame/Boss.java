@@ -11,7 +11,7 @@ import java.awt.Graphics;
  * 
  * @author Hack'n Matata
  */
-public class Spaniard extends Item{
+public class Boss extends Item{
 
     private Game game;                  // store game
     private Animation actualAnimation;
@@ -25,9 +25,10 @@ public class Spaniard extends Item{
      * @param y the y position of the spaniard
      * @param width the width of the spaniard
      * @param height the height of the spaniard
+     * @param life the life of the boss
      * @param game the game
      */
-    public Spaniard(int x, int y, int width, int height,int life, Game game){
+    public Boss(int x, int y, int width, int height,int life, Game game){
         super(x, y, width, height);
         this.game = game;
         this.actualAnimation = Assets.spaniardRBasic;
@@ -60,7 +61,7 @@ public class Spaniard extends Item{
         }
         
         if(getY()>game.getPlayer().getY()+2)direction=2;
-        else if(getY()+2<game.getPlayer().getY())direction=4;
+        else if(getY()+2<game.getPlayer().getY() && getY()+200<=game.getYf())direction=4;
         
         switch(direction){
             case 2: 

@@ -12,31 +12,36 @@ import java.awt.image.BufferedImage;
  * @author Rbtote
  */
 public class Map {
-    private int x0,xf,y0,yf,doorx,doory,playerx,playery,enem;
+    private int x0,xf,y0,yf,doorx,doory,playerx,playery,enem,doortype;
+    private boolean boss;
     int index;
     private BufferedImage image;
-    private static int playerX[]={611,660,50,10,660};
-    private static int playerY[]={336,608,336,608,608};
-    private static int x0s[]={27,27,27,8,27};
-    private static int xfs[]={1235,1235,1235,240,1235};
-    private static int y0s[]={8,8,152,8,8};
-    private static int yfs[]={608,608,400,608,608};
-    private static int doorsx[]={611,1370,1370,90,-500};
-    private static int doorsy[]={5,300,260,5,-500};
-    private static int enemies[]={0,1,0,2,1};
+    private static int playerX[]={611,660,50,10,385,660};
+    private static int playerY[]={336,608,336,608,336,608};
+    private static int x0s[]={27,27,27,8,385,27};
+    private static int xfs[]={1235,1235,1235,240,1235,1235};
+    private static int y0s[]={8,8,152,8,8,8};
+    private static int yfs[]={608,608,400,608,608,608};
+    private static int doorsx[]={611,1370,1370,355,611,-500};
+    private static int doorsy[]={5,300,260,330,5,-500};
+    private static int enemies[]={0,1,0,2,3,1};
+    private static int doortypes[]={1,2,2,2,1,1};
+    private static boolean bosses[]={false,false,false,false,false,true};
     
     public Map(int index){        
-        this.index = index;        
-        this.x0 = x0s[index];
-        this.xf = xfs[index];
-        this.y0 = y0s[index];
-        this.yf = yfs[index];
-        this.doorx = doorsx[index];
-        this.doory = doorsy[index];
-        this.playerx = playerX[index];
-        this.playery = playerY[index];
-        this.enem = enemies[index];
-        this.image = videogame.Assets.getMapImage(index);
+        this.index      = index;        
+        this.x0         = x0s[index];
+        this.xf         = xfs[index];
+        this.y0         = y0s[index];
+        this.yf         = yfs[index];
+        this.doorx      = doorsx[index];
+        this.doory      = doorsy[index];
+        this.playerx    = playerX[index];
+        this.playery    = playerY[index];
+        this.enem       = enemies[index];
+        this.doortype   = doortypes[index];
+        this.boss       = bosses[index];
+        this.image      = videogame.Assets.getMapImage(index);
     }
     
     public BufferedImage getImageMap() {
@@ -77,6 +82,14 @@ public class Map {
 
     public int getEnem() {
         return enem;
+    }
+
+    public boolean hasBoss() {
+        return boss;
+    }
+    
+    public int getDoosType(){
+        return doortype;
     }
     
 

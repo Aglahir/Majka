@@ -26,7 +26,8 @@ public class Game implements Runnable{
     private boolean running;        // to set the game
     private boolean pause;          // to pause the game
     private boolean manual;         // to show the manual of the game
-    private boolean inDoor;
+    private boolean inDoor;         // to check collition with door
+    private boolean hasBoss;        // to check the boss of the level
     private boolean tutorial;       // to show the tutorial at the begining of the game
     private KeyManager keyManager;  // to manage the keyboard
     private MouseManager mouseManager; // to manage the mouse
@@ -35,7 +36,7 @@ public class Game implements Runnable{
     private int shootTimer = fps/2;   // delay to shoot
     private int spacebarCooldown = 30;
     private int level=0;              //for the level of the map
-    private int x0,xf,y0,yf,dx,dy,px,py;  //data for the map limits and the doors
+    private int x0,xf,y0,yf,dx,dy,dt,px,py;  //data for the map limits and the doors
     private int enemies;            //number of enemies in each map
     private int contador = 0;   // delay to shoot
     int count=0;
@@ -44,6 +45,7 @@ public class Game implements Runnable{
     private ArrayList<Mob> hadoukens;      // simple hadoukens list
     private ArrayList<Popup> popups;       // simple popups list
     private ArrayList<Spaniard> spaniards; // simple spaniard list
+    private Boss boss;
     private STATE state;      // for manage the states that the game can have
     
     private void init()
@@ -71,16 +73,22 @@ public class Game implements Runnable{
         yf = map.getYf();
         dx = map.getDoorx();
         dy = map.getDoory();
+        dt = map.getDoosType();
         px = map.getPlayerx();
         py = map.getPlayery();
         enemies = map.getEnem();
+        hasBoss = map.hasBoss();
         mapImage = map.getImageMap();
         player = new Player(px,py,100,100,this);
         spaniards.clear();
+        hadoukens.clear();
         for(int i=0; i<enemies; i++){
             int enemX = ThreadLocalRandom.current().nextInt(x0, xf + 1);
             int enemY = ThreadLocalRandom.current().nextInt(y0, yf + 1);
-            spaniards.add(new Spaniard(enemX, enemY,100, 100, this));
+            spaniards.add(new Spaniard(enemX, enemY,100, 100,100, this));
+        }
+        if(hasBoss){
+            boss = new Boss((xf-x0)/2, (yf-y0)/2, 300, 300, 2000, this);
         }
     }
     
@@ -174,6 +182,7 @@ public class Game implements Runnable{
             //System.out.println("Door X = "+dx+" Door Y = "+dy);
             //System.out.println("Level: "+level);
             player.tick();
+            if(hasBoss)boss.tick();
             if(player.getX() <= dx+160 && player.getX()>=dx-160 &&player.getY()<=dy+160 && player.getY()>=dy-160 && spaniards.isEmpty()){
                 inDoor=true;
                 if(getKeyManager().Enter && contador > 1200){                                    
@@ -189,6 +198,7 @@ public class Game implements Runnable{
                 for(int j = 0;j<hadoukens.size();j++){                    
                     if(hadoukens.get(j).getX()<=spaniards.get(i).getX()+20 && hadoukens.get(j).getX()>=spaniards.get(i).getX()-20 && hadoukens.get(j).getY()>=spaniards.get(i).getY()-20 && hadoukens.get(j).getY()<=spaniards.get(i).getY()+20){                                                
                         spaniards.get(i).setLife(spaniards.get(i).getLife()-20);
+                        hadoukens.remove(hadoukens.get(j));
                         if(spaniards.get(i).getLife()==0){
                             spaniards.remove(spaniards.get(i));
                             break;
@@ -197,11 +207,23 @@ public class Game implements Runnable{
                 }
             }
             for(int i = 0;i<hadoukens.size();i++){
-                hadoukens.get(i).tick();
+                hadoukens.get(i).tick();                  
+                if(hasBoss){
+                    if(hadoukens.get(i).getX()>=boss.getX() && hadoukens.get(i).getX()<=boss.getX()+270 && hadoukens.get(i).getY()>=boss.getY() && hadoukens.get(i).getY()<=boss.getY()+300){
+                        hadoukens.remove(hadoukens.get(i));
+                        boss.setLife(boss.getLife()-20);
+                        if(boss.getLife()<=0){
+                            boss = null;
+                            hasBoss = false;
+                            break;
+                        }
+                        break;
+                    }
+                }     
                 if(outOfBounds(hadoukens.get(i))){
                    hadoukens.remove(i);
                    i--;
-                }               
+                }  
             }
         }
     }
@@ -211,7 +233,7 @@ public class Game implements Runnable{
     }
     
     public boolean outOfBounds(Item item){
-        return (item.getX()<0 || item.getX()+item.getWidth()>getWidth() || item.getY()<0 || item.getY()+item.getHeight()>getHeight());
+        return (item.getX()+10<x0 || item.getX()-10>xf || item.getY()+10<y0 || item.getY()-10>yf);
     }
     
     /**
@@ -245,7 +267,7 @@ public class Game implements Runnable{
             } else if(isPaused()){ //for displaying the paused image
                 g.drawImage(mapImage, 0, 0, getWidth(), getHeight(), null);
                 if(spaniards.isEmpty())
-                if(dx==1370 || dx ==19)g.drawImage(Assets.door, dx, dy, -60, 200, null);
+                if(dt==2)g.drawImage(Assets.door, dx, dy, -60, 200, null);
                 else g.drawImage(Assets.door1, dx, dy, 200, 60, null);
                 for(int i = 0;i<spaniards.size();i++){
                     spaniards.get(i).render(g);
@@ -260,11 +282,11 @@ public class Game implements Runnable{
             } else if(!isPaused()){
                 g.drawImage(mapImage, 0, 0, getWidth(), getHeight(), null);
                 if(spaniards.isEmpty())
-                    if(dx==1370 || dx ==19)g.drawImage(Assets.door, dx, dy, -60, 200, null);
+                    if(dt==2)g.drawImage(Assets.door, dx, dy, -60, 200, null);
                     else g.drawImage(Assets.door1, dx, dy, 200, 60, null);
             
                 if(inDoor && contador > 1200){
-                    g.setColor(Color.white);
+                    g.setColor(Color.white);                    
                     g.drawString("Presiona ENTER para usar la puerta", player.getX(), player.getY()+120);
                 }
                     
@@ -276,6 +298,7 @@ public class Game implements Runnable{
                 for(int i = 0;i<spaniards.size();i++){
                     spaniards.get(i).render(g);
                 }
+                if(hasBoss)boss.render(g);
 
                 player.render(g);
 
