@@ -27,6 +27,7 @@ public class Game implements Runnable{
     private boolean pause;          // to pause the game
     private boolean manual;         // to show the manual of the game
     private boolean inDoor;
+    private boolean tutorial;       // to show the tutorial at the begining of the game
     private KeyManager keyManager;  // to manage the keyboard
     private MouseManager mouseManager; // to manage the mouse
     private Player player;          // first player
@@ -36,6 +37,8 @@ public class Game implements Runnable{
     private int level=0;              //for the level of the map
     private int x0,xf,y0,yf,dx,dy,px,py;  //data for the map limits and the doors
     private int enemies;            //number of enemies in each map
+    private int contador = 0;   // delay to shoot
+    int count=0;
     private Map map = new Map(0);                //to read the data of every map
     private BufferedImage mapImage;
     private ArrayList<Mob> hadoukens;      // simple hadoukens list
@@ -147,14 +150,15 @@ public class Game implements Runnable{
             if(this.getMouseManager().getX()>=482 && this.getMouseManager().getX() <= 891 && this.getMouseManager().getY()>=520 && this.getMouseManager().getY() <= 593)
                 System.exit(0);
         }
-        if(this.getKeyManager().P) {
+        if(this.getKeyManager().P && state == STATE.game) {
             this.setPause(!this.isPaused());
             this.setManual(false);
         } //for pausing the game
         
-        if(this.getKeyManager().M) this.setManual(!this.isManual()); // for showing the manual of the game
+        if(this.getKeyManager().M && state == STATE.game) this.setManual(!this.isManual()); // for showing the manual of the game
         
         if(!this.isPaused() && state == STATE.game){ // if the game is not paused then
+            contador++;
             if(spacebarCooldown == 0){
                 if(getKeyManager().Space){
                     spacebarCooldown = 30;
@@ -172,7 +176,7 @@ public class Game implements Runnable{
             player.tick();
             if(player.getX() <= dx+160 && player.getX()>=dx-160 &&player.getY()<=dy+160 && player.getY()>=dy-160 && spaniards.isEmpty()){
                 inDoor=true;
-                if(getKeyManager().Enter){                                    
+                if(getKeyManager().Enter && contador > 1200){                                    
                     level++;
                     loadMap();
                 }
@@ -231,7 +235,14 @@ public class Game implements Runnable{
             g = bs.getDrawGraphics();
             
             //Insert code here!!
-            if(isPaused()){ //for displaying the paused image
+            
+            if(count<=400){
+                g.drawImage(Assets.logo,0,0,this.getWidth(),this.getHeight(),null);
+                count++;
+            } else if(state == STATE.menu){
+                g.drawImage(Assets.logo,0,0,this.getWidth(),this.getHeight(),null);
+                g.drawImage(Assets.mainMenu,0,0,this.getWidth(),this.getHeight(),null);
+            } else if(isPaused()){ //for displaying the paused image
                 g.drawImage(mapImage, 0, 0, getWidth(), getHeight(), null);
                 if(spaniards.isEmpty())
                 if(dx==1370 || dx ==19)g.drawImage(Assets.door, dx, dy, -60, 200, null);
@@ -246,17 +257,15 @@ public class Game implements Runnable{
                 else{
                     g.drawImage(Assets.pause, 0, 0, width, height, null);
                 }
-            } else if(state == STATE.menu){
-                g.drawImage(Assets.mainMenu,0,0,this.getWidth(),this.getHeight(),null);
             } else if(!isPaused()){
                 g.drawImage(mapImage, 0, 0, getWidth(), getHeight(), null);
                 if(spaniards.isEmpty())
-                if(dx==1370 || dx ==19)g.drawImage(Assets.door, dx, dy, -60, 200, null);
-                else g.drawImage(Assets.door1, dx, dy, 200, 60, null);
+                    if(dx==1370 || dx ==19)g.drawImage(Assets.door, dx, dy, -60, 200, null);
+                    else g.drawImage(Assets.door1, dx, dy, 200, 60, null);
             
-                if(inDoor){
+                if(inDoor && contador > 1200){
                     g.setColor(Color.white);
-                    g.drawString("Press ENTER to use the door", player.getX(), player.getY()+120);
+                    g.drawString("Presiona ENTER para usar la puerta", player.getX(), player.getY()+120);
                 }
                     
                 //HADOUKENS!!!
@@ -275,6 +284,8 @@ public class Game implements Runnable{
                     popups.get(i).render(g);
                     if(popups.get(i).hasEnded())popups.remove(i);
                 }
+                if(contador <= 600) g.drawImage(Assets.texto1, 0, 2*getHeight()/3, getWidth(), getHeight()/3, null);
+                else if(contador >= 600 && contador <= 1200) g.drawImage(Assets.texto, 0, 2*getHeight()/3, getWidth(), getHeight()/3, null);
             }
             
             bs.show();
