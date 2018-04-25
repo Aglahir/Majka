@@ -54,6 +54,23 @@ public class Player extends Item{
      * Checks where is it moving to
      */
     private void checkDirection(){
+        if(getY()<=game.getY0()){
+            speedY=0;
+            setY(game.getY0()+1);
+        }
+        else if(getY()>=game.getYf()){
+            speedY=0;
+            setY(game.getYf()-1);
+        }
+            
+        if(getX()<=game.getX0()){
+            speedX = 0;
+            setX(game.getX0()+1);
+        }else if(getX()>=game.getXf()){
+            speedX = 0;
+            setX(game.getXf()-1);
+        }
+        
         direction=0;
         double tmp1 = Math.random()*50-25,tmp2 = Math.random()*5;
         if(game.getKeyManager().D && !game.getKeyManager().A){actualAnimation = Assets.playerRBasic;direction=3;}
@@ -61,12 +78,14 @@ public class Player extends Item{
         
         switch(direction){
             case 1: 
-                    if(getX()>=game.getX0())if(speedX>maxSpeed*-1)speedX--;
+                    if(getX()>=game.getX0()){if(speedX>maxSpeed*-1)speedX--;}
+                    else speedX=0;
                     minMapPosX -= (float)speedX/37;
                     game.createParticle(new Popup(getX()+getWidth()/2,getY()+getHeight()+(int)tmp1,(int)tmp2,(int)tmp2,4,50,10));
                     break;
             case 3: 
-                    if(getX()<=game.getXf())if(speedX<maxSpeed)speedX++;
+                    if(getX()<=game.getXf()){if(speedX<maxSpeed)speedX++;}
+                    else speedX=0;
                     minMapPosX += (float)speedX/37;
                     game.createParticle(new Popup(getX()+getWidth()/2,getY()+getHeight()+(int)tmp1,(int)tmp2,(int)tmp2,4,50,10));
                     break;
@@ -84,12 +103,14 @@ public class Player extends Item{
         
         switch(direction){
             case 2: 
-                     if(getY()>=game.getY0())if(speedY>maxSpeed*-1)speedY--;
+                    if(getY()>=game.getY0()){if(speedY>maxSpeed*-1)speedY--;}
+                    else speedY=0;
                     minMapPosY -= (float)speedY/31;
                     game.createParticle(new Popup(getX()+(int)tmp1+getWidth()/2,getY()+getHeight()+(int)tmp1,(int)tmp2,(int)tmp2,4,50,10));
                     break;
             case 4: 
-                     if(getY()<=game.getYf())if(speedY<maxSpeed)speedY++;
+                    if(getY()<=game.getYf()){if(speedY<maxSpeed)speedY++;}
+                    else speedY=0;
                     minMapPosY += (float)speedY/31;
                     game.createParticle(new Popup(getX()+(int)tmp1+getWidth()/2,getY(),(int)tmp2,(int)tmp2,4,50,10));
                     break;
@@ -119,7 +140,7 @@ public class Player extends Item{
         
         if(getY()<item.getY())speedY-=10;
         else speedY+=10;
-                
+        
         setX(getX()+speedX);
         setY(getY()+speedY);
     }

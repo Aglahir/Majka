@@ -44,6 +44,23 @@ public class Spaniard extends Item{
      * Checks where is it moving to
      */
     private void checkDirection(){
+        if(getY()<=game.getY0()){
+            speedY=0;
+            setY(game.getY0()+1);
+        }
+        else if(getY()>=game.getYf()){
+            speedY=0;
+            setY(game.getYf()-1);
+        }
+            
+        if(getX()<=game.getX0()){
+            speedX = 0;
+            setX(game.getX0()+1);
+        }else if(getX()>=game.getXf()){
+            speedX = 0;
+            setX(game.getXf()-1);
+        }
+        
         direction=0;
         if(getX()>game.getPlayer().getX()+game.getPlayer().getWidth())direction=1;
         else if(getX()+getWidth()<game.getPlayer().getX())direction=3;
