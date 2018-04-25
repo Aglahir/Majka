@@ -42,7 +42,8 @@ public class Game implements Runnable{
     int count=0;
     private Map map = new Map(0);                //to read the data of every map
     private BufferedImage mapImage;
-    private ArrayList<Mob> hadoukens;      // simple hadoukens list
+    private ArrayList<Mob> mobs;      // mobs list
+    private ArrayList<Mob> throwableObjects;      // throwable list
     private ArrayList<Popup> popups;       // simple popups list
     private ArrayList<Spaniard> spaniards; // simple spaniard list
     private Boss boss;
@@ -51,8 +52,8 @@ public class Game implements Runnable{
     private void init()
     {
         display = new Display(title,getWidth(),getHeight());            //Display instanciated
-        Assets.init();                                                  //Assets loaded        
-        hadoukens = new ArrayList<>();
+        Assets.init();                                                  //Assets loaded
+        mobs = new ArrayList<>();
         popups = new ArrayList<>();
         spaniards = new ArrayList<>();
         loadMap();
@@ -81,7 +82,6 @@ public class Game implements Runnable{
         mapImage = map.getImageMap();
         player = new Player(px,py,100,100,this);
         spaniards.clear();
-        hadoukens.clear();
         for(int i=0; i<enemies; i++){
             int enemX = ThreadLocalRandom.current().nextInt(x0, xf + 1);
             int enemY = ThreadLocalRandom.current().nextInt(y0, yf + 1);
@@ -192,48 +192,49 @@ public class Game implements Runnable{
             }else{
                 inDoor=false;
             }
-
-            for(int i = 0;i<spaniards.size();i++){
-                spaniards.get(i).tick();
-                for(int j = 0;j<hadoukens.size();j++){                    
-                    if(hadoukens.get(j).getX()<=spaniards.get(i).getX()+20 && hadoukens.get(j).getX()>=spaniards.get(i).getX()-20 && hadoukens.get(j).getY()>=spaniards.get(i).getY()-20 && hadoukens.get(j).getY()<=spaniards.get(i).getY()+20){                                                
-                        spaniards.get(i).setLife(spaniards.get(i).getLife()-20);
-                        hadoukens.remove(hadoukens.get(j));
-                        if(spaniards.get(i).getLife()==0){
-                            spaniards.remove(spaniards.get(i));
-                            break;
-                        }                        
-                    }
-                }
-            }
-            for(int i = 0;i<hadoukens.size();i++){
-                hadoukens.get(i).tick();                  
-                if(hasBoss){
-                    if(hadoukens.get(i).getX()>=boss.getX() && hadoukens.get(i).getX()<=boss.getX()+270 && hadoukens.get(i).getY()>=boss.getY() && hadoukens.get(i).getY()<=boss.getY()+300){
-                        hadoukens.remove(hadoukens.get(i));
-                        boss.setLife(boss.getLife()-20);
-                        if(boss.getLife()<=0){
-                            boss = null;
-                            hasBoss = false;
-                            break;
-                        }
-                        break;
-                    }
-                }     
-                if(outOfBounds(hadoukens.get(i))){
-                   hadoukens.remove(i);
-                   i--;
-                }  
+       
+        for(int i = 0;i<spaniards.size();i++){
+            Spaniard tempSpaniard = spaniards.get(i);
+            tempSpaniard.tick();
+            if(getPlayer().checkCollision(tempSpaniard.getCollider())){
+                getPlayer().collisionJump(tempSpaniard);
+                tempSpaniard.collisionJump(getPlayer());
             }
         }
+        
+        for(int j = 0;j<mobs.size();j++){
+            Mob tempMob = mobs.get(j);
+            tempMob.tick();
+            if(outOfBounds(tempMob)){
+                tempMob.setDead();
+            }
+            if(tempMob.isDead()){
+                mobs.remove(j);
+            }
+        }
+            
+       
+       for(int i = 0;i<spaniards.size();i++){
+            Spaniard tempSpaniard = spaniards.get(i);
+            
+            for(int j = 0;j<mobs.size();j++){
+                Mob tempMob = mobs.get(j);
+                
+                if(tempSpaniard.checkCollision(tempMob.getCollider())){
+                    tempSpaniard.collisionJump(tempMob);
+                    if(tempSpaniard.hurt(tempMob.getDamage())){spaniards.remove(i);break;}
+                    tempMob.setDead();
+                }
+            }
+       }
     }
-    
+}
     public void createParticle(Popup popup){
         popups.add(popup);
     }
     
     public boolean outOfBounds(Item item){
-        return (item.getX()+10<x0 || item.getX()-10>xf || item.getY()+10<y0 || item.getY()-10>yf);
+        return (item.getX()<0 || item.getX()+item.getWidth()>getWidth() || item.getY()<0 || item.getY()+item.getHeight()>getHeight());
     }
     
     /**
@@ -258,11 +259,10 @@ public class Game implements Runnable{
             
             //Insert code here!!
             
-            if(count<=400){
+            if(count<=80){
                 g.drawImage(Assets.logo,0,0,this.getWidth(),this.getHeight(),null);
                 count++;
             } else if(state == STATE.menu){
-                g.drawImage(Assets.logo,0,0,this.getWidth(),this.getHeight(),null);
                 g.drawImage(Assets.mainMenu,0,0,this.getWidth(),this.getHeight(),null);
             } else if(isPaused()){ //for displaying the paused image
                 g.drawImage(mapImage, 0, 0, getWidth(), getHeight(), null);
@@ -281,6 +281,7 @@ public class Game implements Runnable{
                 }
             } else if(!isPaused()){
                 g.drawImage(mapImage, 0, 0, getWidth(), getHeight(), null);
+                g.drawImage(mapImage, 0, 0, getWidth(), getHeight(), null);
                 if(spaniards.isEmpty())
                     if(dt==2)g.drawImage(Assets.door, dx, dy, -60, 200, null);
                     else g.drawImage(Assets.door1, dx, dy, 200, 60, null);
@@ -289,20 +290,18 @@ public class Game implements Runnable{
                     g.setColor(Color.white);                    
                     g.drawString("Presiona ENTER para usar la puerta", player.getX(), player.getY()+120);
                 }
-                    
+            
                 //HADOUKENS!!!
-                for(int i = 0;i<hadoukens.size();i++){
-                    hadoukens.get(i).render(g);
+                for(int i = 0;i<mobs.size();i++){
+                    mobs.get(i).render(g);
                 }
 
                 for(int i = 0;i<spaniards.size();i++){
                     spaniards.get(i).render(g);
                 }
-                if(hasBoss)boss.render(g);
-
                 player.render(g);
 
-                // POPUPS!!!
+                // POPUPS!!! These are just rendered, no tick is needed
                 for(int i=0;i<popups.size();i++){
                     popups.get(i).render(g);
                     if(popups.get(i).hasEnded())popups.remove(i);
@@ -310,7 +309,6 @@ public class Game implements Runnable{
                 if(contador <= 600) g.drawImage(Assets.texto1, 0, 2*getHeight()/3, getWidth(), getHeight()/3, null);
                 else if(contador >= 600 && contador <= 1200) g.drawImage(Assets.texto, 0, 2*getHeight()/3, getWidth(), getHeight()/3, null);
             }
-            
             bs.show();
             g.dispose();
         }
@@ -398,10 +396,20 @@ public class Game implements Runnable{
         return mouseManager;
     }
     
-    public void addHadouken(int x, int y, int w, int h, int direction){
+    /**
+     * This method will create instances of Mobs depending of what is needed
+     * @param x X position
+     * @param y Y position
+     * @param w Width
+     * @param h Height
+     * @param direction 1:Left, 2:Up, 3:Right, 4:Down
+     * @param type 
+     */
+    public void addMob(int x, int y, int w, int h, int direction, int type){
+        
         if(shootTimer<=0){
-            hadoukens.add(new Mob(x,y,w,h,this,direction));
-            shootTimer = 0;
+            mobs.add(new Mob(x,y,w,h,this,direction,type));
+            shootTimer = fps/2;
         }
     }
 

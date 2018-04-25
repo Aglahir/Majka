@@ -55,9 +55,6 @@ public class Boss extends Item{
                     setX(getX()+speed);
                     actualAnimation = Assets.spaniardRBasic;
                     break;
-            default:
-                    actualAnimation = Assets.spaniardIddleBasic;
-                    break;
         }
         
         if(getY()>game.getPlayer().getY()+2)direction=2;

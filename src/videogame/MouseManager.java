@@ -39,7 +39,6 @@ public class MouseManager implements MouseListener, MouseMotionListener{
             izquierdo = true;
             x = e.getX();
             y = e.getY();
-            System.out.println("x= "+x+", y ="+y);
         }
     }
 

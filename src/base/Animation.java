@@ -30,12 +30,32 @@ public class Animation {
     }
     
     /**
+     * Copy Animation image
+     * @param animation 
+     */
+    public Animation(Animation animation){
+        this.frames = animation.frames;
+        this.speed = animation.speed;
+        this.index = 0;
+        this.timer = 0;
+        lastTime = System.currentTimeMillis();  //getting initial time
+    }
+    
+    /**
      * Getting current frame to paint
      * @return BufferedImage to paint next frame
      */
     public BufferedImage getCurrentFrame()
     {
         return frames[index];
+    }
+    
+    /**
+     * Get if current frame is the last
+     * @return true if is the last
+     */
+    public boolean animationEnded(){
+        return index+1>= frames.length;
     }
     
     public void tick()

@@ -17,6 +17,7 @@ public class Assets {
     public static BufferedImage map, minimap, boom, pow, bam, cloudParticles, pause, mainMenu, manual,door,door1, texto, texto1, logo;
     public static SoundClip music;
     public static SoundClip shoot, hit, ouchEnemy, ouchPlayer;
+    public static Animation arrowUp,arrowLeft,arrowRight,arrowDown;
     
     public static BufferedImage getMapImage(int index){
         return ImageLoader.loadImage("/images/Map"+index+".png");
@@ -29,7 +30,7 @@ public class Assets {
     {
         try{
             BufferedImage up[],down[],left[],right[],iddleBasic[];
-            BufferedImage upS[],downS[],leftS[],rightS[], iddleBasicS[];
+            BufferedImage arrowUpImg[],arrowLeftImg[],arrowRightImg[],arrowDownImg[];
             
             boom = ImageLoader.loadImage("/images/boom.png");
             pow = ImageLoader.loadImage("/images/pow.png");
@@ -44,12 +45,37 @@ public class Assets {
             texto1 = ImageLoader.loadImage("/images/texto1.png");
             logo = ImageLoader.loadImage("/images/mj.png");
             
-            SpriteSheet sprites1 = new SpriteSheet(ImageLoader.loadImage("/images/playerLeftBasic.png"));
-            SpriteSheet sprites2 = new SpriteSheet(ImageLoader.loadImage("/images/playerRightBasic.png"));
-            SpriteSheet sprites3 = new SpriteSheet(ImageLoader.loadImage("/images/playerIddleBasic.png"));
+            arrowUpImg = new BufferedImage[5];
+            arrowLeftImg = new BufferedImage[5];
+            arrowRightImg = new BufferedImage[5];
+            arrowDownImg = new BufferedImage[5];
+            
+            SpriteSheet sprites1 = new SpriteSheet(ImageLoader.loadImage("/images/arrowUp.png"));
+            SpriteSheet sprites2 = new SpriteSheet(ImageLoader.loadImage("/images/arrowLeft.png"));
+            SpriteSheet sprites3 = new SpriteSheet(ImageLoader.loadImage("/images/arrowRight.png"));
+            SpriteSheet sprites4 = new SpriteSheet(ImageLoader.loadImage("/images/arrowDown.png"));
+           
+            
+            
+            for(int i = 0;i<5;i++){
+                arrowUpImg[i] = sprites1.crop(122*i, 0, 122, 160);
+                arrowLeftImg[i] = sprites2.crop(122*i, 0, 122, 160);
+                arrowRightImg[i] = sprites3.crop(122*i, 0, 122, 160);
+                arrowDownImg[i] = sprites4.crop(122*i, 0, 122, 160);
+            }
+            
+
+            arrowUp = new Animation(arrowUpImg,70);
+            arrowLeft = new Animation(arrowLeftImg,70);
+            arrowRight = new Animation(arrowRightImg,70);
+            arrowDown = new Animation(arrowDownImg,70);
             
             map = ImageLoader.loadImage("/images/singleMap.png");
             minimap = ImageLoader.loadImage("/images/fullMap.png");
+            
+            sprites1 = new SpriteSheet(ImageLoader.loadImage("/images/playerLeftBasic.png"));
+            sprites2 = new SpriteSheet(ImageLoader.loadImage("/images/playerRightBasic.png"));
+            sprites3 = new SpriteSheet(ImageLoader.loadImage("/images/playerIddleBasic.png"));
             
             left = new BufferedImage[8];
             right = new BufferedImage[8];
@@ -72,11 +98,7 @@ public class Assets {
             playerRBasic = new Animation(right,30);
             playerIddleBasic = new Animation(iddleBasic,30);
             
-            spaniardLBasic = new Animation(left,30);
-            spaniardRBasic = new Animation(right,30);
-            spaniardIddleBasic = new Animation(iddleBasic,30);
-            
-            sprites1 = new SpriteSheet(ImageLoader.loadImage("/images/PlayerUpBasic.png"));
+            sprites1 = new SpriteSheet(ImageLoader.loadImage("/images/playerUpBasic.png"));
             sprites2 = new SpriteSheet(ImageLoader.loadImage("/images/playerDownBasic.png"));
             
             
@@ -89,8 +111,35 @@ public class Assets {
             playerUBasic = new Animation(up,70);
             playerDBasic = new Animation(down,70);
             
+            left = new BufferedImage[12];
+            up = new BufferedImage[4];
+            right = new BufferedImage[12];
+            down = new BufferedImage[4];
+            
+            sprites1 = new SpriteSheet(ImageLoader.loadImage("/images/spaniardBasicUp.png"));
+            sprites2 = new SpriteSheet(ImageLoader.loadImage("/images/spaniardBasicLeft.png"));
+            sprites3 = new SpriteSheet(ImageLoader.loadImage("/images/spaniardBasicRight.png"));
+            sprites4 = new SpriteSheet(ImageLoader.loadImage("/images/spaniardBasicDown.png"));
+            
+            //4 columns. 32x32
+            for(int i=0;i<4;i++){
+                up[i]=sprites1.crop(32*i, 0, 32, 32);
+                down[i]=sprites4.crop(32*i, 0, 32, 32);
+                left[i]=sprites2.crop(32*i, 0, 32, 32);
+                right[i]=sprites3.crop(32*i, 0, 32, 32);
+            }
+            
+            //the remaining columns 12-4=8 columns
+            for(int i=4;i<12;i++){
+                left[i]=sprites2.crop(32*i, 0, 32, 32);
+                right[i]=sprites3.crop(32*i, 0, 32, 32);
+            }
+            
+            
             spaniardUBasic = new Animation(up,70);
             spaniardDBasic = new Animation(down,70);
+            spaniardLBasic = new Animation(left,30);
+            spaniardRBasic = new Animation(right,30);
         }
         catch(Exception e)
         {
