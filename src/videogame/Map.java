@@ -12,6 +12,7 @@ import java.awt.image.BufferedImage;
  * @author Rbtote
  */
 public class Map {
+    //All map data
     private int x0,xf,y0,yf,doorx,doory,playerx,playery,enem,doortype;
     private boolean boss;
     int index;
@@ -28,6 +29,10 @@ public class Map {
     private static int doortypes[]={1,2,2,2,1,1};
     private static boolean bosses[]={false,false,false,false,false,true};
     
+    /**
+     * constructor of the map
+     * @param index 
+     */
     public Map(int index){        
         this.index      = index;        
         this.x0         = x0s[index];
@@ -44,50 +49,98 @@ public class Map {
         this.image      = videogame.Assets.getMapImage(index);
     }
     
+    /**
+     * 
+     * @return image of the map
+     */
     public BufferedImage getImageMap() {
         return image;
     }
 
+    /**
+     * 
+     * @return map x inf limit
+     */
     public int getX0() {
         return x0;
     }
 
+    /**
+     * 
+     * @return map x sup limit
+     */
     public int getXf() {
         return xf;
     }
 
+    /**
+     * 
+     * @return map inf y limit
+     */
     public int getY0() {
         return y0;
     }
 
+    /**
+     * 
+     * @return map sup y limit
+     */
     public int getYf() {
         return yf;
     }
 
+    /**
+     * 
+     * @return map x door coord
+     */
     public int getDoorx() {
         return doorx;
     }
 
+    /**
+     * 
+     * @return map y door coord
+     */
     public int getDoory() {
         return doory;
     }
 
+    /**
+     * 
+     * @return player initial x coord
+     */
     public int getPlayerx() {
         return playerx;
     }
 
+    /**
+     * 
+     * @return player initial y coord
+     */
     public int getPlayery() {
         return playery;
     }
 
+    /**
+     * 
+     * @return number of enemies in the map
+     */
     public int getEnem() {
         return enem;
     }
 
+    /**
+     * 
+     * @return if the map has a boss
+     */
     public boolean hasBoss() {
         return boss;
     }
     
+    /**
+     * 
+     * @return door type in the map
+     */
     public int getDoosType(){
         return doortype;
     }

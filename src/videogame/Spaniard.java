@@ -61,6 +61,7 @@ public class Spaniard extends Item{
             setX(game.getXf()-1);
         }
         
+        //check x moving direction
         direction=0;
         if(getX()>game.getPlayer().getX()+game.getPlayer().getWidth())direction=1;
         else if(getX()+getWidth()<game.getPlayer().getX())direction=3;
@@ -79,6 +80,7 @@ public class Spaniard extends Item{
                     break;
         }
         
+        //check y moving direction
         if(getY()>game.getPlayer().getY()+2)direction=2;
         else if(getY()+2<game.getPlayer().getY())direction=4;
         else direction=5;
@@ -115,6 +117,11 @@ public class Spaniard extends Item{
         return collider.checkCollision(col);
     }
     
+    /**
+     * to check collition with arrow
+     * @param damage the damage received
+     * @return spaniard state, boolean
+     */
     public boolean hurt(int damage){
         double tmp1 = Math.random()*50-25,
                tmp2 = Math.random()*3 +1,
@@ -124,6 +131,10 @@ public class Spaniard extends Item{
         return life<=0;
     }
     
+    /**
+     * to check collition with player
+     * @param item 
+     */
     public void collisionJump(Item item) {
         speedX*=-3;
         speedY*=-3;

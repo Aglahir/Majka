@@ -73,6 +73,7 @@ public class Player extends Item{
         
         direction=0;
         double tmp1 = Math.random()*50-25,tmp2 = Math.random()*5;
+         //check x moving direction
         if(game.getKeyManager().D && !game.getKeyManager().A){actualAnimation = Assets.playerRBasic;direction=3;}
         else if(!game.getKeyManager().D && game.getKeyManager().A){actualAnimation = Assets.playerLBasic;direction=1;}
         
@@ -96,7 +97,7 @@ public class Player extends Item{
                     actualAnimation = Assets.playerIddleBasic;
                     break;
         }
-        
+         //check y moving direction
         if(game.getKeyManager().W && !game.getKeyManager().S){actualAnimation = Assets.playerUBasic;direction=2;}
         else if(!game.getKeyManager().W && game.getKeyManager().S){actualAnimation = Assets.playerDBasic;direction=4;}
         else direction=5;

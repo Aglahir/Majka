@@ -16,39 +16,42 @@ import javax.swing.JOptionPane;
 
 public class Game implements Runnable{
 
-    private BufferStrategy bs;      // to have several buffers when displaying
-    private Graphics g;             // to paint objects
-    private Display display;        // to display in game
-    String title;                   // title of the window
-    private int width;              // width of the window
-    private int height;             // height of the window
-    private Thread thread;          // thread to create the game
-    private boolean running;        // to set the game
-    private boolean pause;          // to pause the game
-    private boolean manual;         // to show the manual of the game
-    private boolean inDoor;         // to check collition with door
-    private boolean hasBoss;        // to check the boss of the level
-    private boolean tutorial;       // to show the tutorial at the begining of the game
-    private KeyManager keyManager;  // to manage the keyboard
-    private MouseManager mouseManager; // to manage the mouse
-    private Player player;          // first player
-    private int fps = 60;           // set FPS for the thread running
-    private int shootTimer = fps/2;   // delay to shoot
-    private int spacebarCooldown = 30;
-    private int level=0;              //for the level of the map
-    private int x0,xf,y0,yf,dx,dy,dt,px,py;  //data for the map limits and the doors
-    private int enemies;            //number of enemies in each map
-    private int contador = 0;   // delay to shoot
-    int count=0;
-    private Map map = new Map(0);                //to read the data of every map
-    private BufferedImage mapImage;
-    private ArrayList<Mob> mobs;      // mobs list
-    private ArrayList<Mob> throwableObjects;      // throwable list
-    private ArrayList<Popup> popups;       // simple popups list
-    private ArrayList<Spaniard> spaniards; // simple spaniard list
-    private Boss boss;
-    private STATE state;      // for manage the states that the game can have
+    private BufferStrategy bs;                  // to have several buffers when displaying
+    private Graphics g;                         // to paint objects
+    private Display display;                    // to display in game
+    String title;                               // title of the window
+    private int width;                          // width of the window
+    private int height;                         // height of the window
+    private Thread thread;                      // thread to create the game
+    private boolean running;                    // to set the game
+    private boolean pause;                      // to pause the game
+    private boolean manual;                     // to show the manual of the game
+    private boolean inDoor;                     // to check collition with door
+    private boolean hasBoss;                    // to check the boss of the level
+    private boolean tutorial;                   // to show the tutorial at the begining of the game
+    private KeyManager keyManager;              // to manage the keyboard
+    private MouseManager mouseManager;          // to manage the mouse
+    private Player player;                      // first player
+    private int fps = 60;                       // set FPS for the thread running
+    private int shootTimer = fps/2;             // delay to shoot
+    private int spacebarCooldown = 30;          //cooldown for the melee to attack again
+    private int level=0;                        //for the level of the map
+    private int x0,xf,y0,yf,dx,dy,dt,px,py;     //data for the map limits and the doors
+    private int enemies;                        //number of enemies in each map
+    private int contador = 0;                   // delay to shoot
+    int count=0;                                // timer for the dialogs
+    private Map map = new Map(0);               //to read the data of every map
+    private BufferedImage mapImage;             //the image of the background in every room
+    private ArrayList<Mob> mobs;                // mobs list
+    private base.SoundClip hurt;                //sound to check player collition
+    private base.SoundClip music;               //ambient music
+    private ArrayList<Mob> throwableObjects;    // throwable list
+    private ArrayList<Popup> popups;            // simple popups list
+    private ArrayList<Spaniard> spaniards;      // simple spaniard list
+    private Boss boss;                          //the boss of the level
+    private STATE state;                        // for manage the states that the game can have
     
+    //to init the resources that we will use on the game
     private void init()
     {
         display = new Display(title,getWidth(),getHeight());            //Display instanciated
@@ -57,6 +60,7 @@ public class Game implements Runnable{
         popups = new ArrayList<>();
         spaniards = new ArrayList<>();
         loadMap();
+        music  = new base.SoundClip("/sounds/song.mp3", 50, true);
         display.getJframe().addKeyListener(keyManager);                 //make the keyManager listens to keys
         display.getJframe().addMouseListener(mouseManager);
         display.getJframe().addMouseMotionListener(mouseManager);
@@ -64,6 +68,9 @@ public class Game implements Runnable{
         display.getCanvas().addMouseMotionListener(mouseManager);
     }
     
+    /**
+     * Method to load every map data
+     */
     private void  loadMap(){
         player = null;
         map = null;
@@ -82,18 +89,20 @@ public class Game implements Runnable{
         mapImage = map.getImageMap();
         player = new Player(px,py,100,100,this);
         spaniards.clear();
+        //create enemies
         for(int i=0; i<enemies; i++){
             int enemX = ThreadLocalRandom.current().nextInt(x0, xf + 1);
             int enemY = ThreadLocalRandom.current().nextInt(y0, yf + 1);
             spaniards.add(new Spaniard(enemX, enemY,100, 100,100, this));
         }
+        //if the level has boss, create it
         if(hasBoss){
             boss = new Boss((xf-x0)/2, (yf-y0)/2, 300, 300, 2000, this);
         }
     }
     
     /**
-     * For manage the states that the game can have
+     * To manage the states that the game can have
      */
     private enum STATE{
         menu, game;
@@ -118,7 +127,10 @@ public class Game implements Runnable{
         state = STATE.menu;
     }
     
-     @Override
+    /*
+    To run the game
+    */
+    @Override
     public void run()
     {
         init(); // initialize before run
@@ -179,13 +191,11 @@ public class Game implements Runnable{
 
             if(shootTimer>0)shootTimer --;
 
-            //System.out.println("Door X = "+dx+" Door Y = "+dy);
-            //System.out.println("Level: "+level);
             player.tick();
             if(hasBoss)boss.tick();
             if(player.getX() <= dx+160 && player.getX()>=dx-160 &&player.getY()<=dy+160 && player.getY()>=dy-160 && spaniards.isEmpty()){
                 inDoor=true;
-                if(getKeyManager().Enter && contador > 1200){                                    
+                if(getKeyManager().Enter && contador > 12){                                    
                     level++;
                     loadMap();
                 }
@@ -193,6 +203,7 @@ public class Game implements Runnable{
                 inDoor=false;
             }
        
+            //to get the player and spaniard collition
         for(int i = 0;i<spaniards.size();i++){
             Spaniard tempSpaniard = spaniards.get(i);
             tempSpaniard.tick();
@@ -202,6 +213,7 @@ public class Game implements Runnable{
             }
         }
         
+        //to check the arrows collition
         for(int j = 0;j<mobs.size();j++){
             Mob tempMob = mobs.get(j);
             tempMob.tick();
@@ -222,7 +234,7 @@ public class Game implements Runnable{
             }
         }
             
-       
+       //to get the spaniards and arrows collition
        for(int i = 0;i<spaniards.size();i++){
             Spaniard tempSpaniard = spaniards.get(i);
             
@@ -240,10 +252,19 @@ public class Game implements Runnable{
        }
     }
 }
+    /**
+     * To create popups of hits
+     * @param popup 
+     */
     public void createParticle(Popup popup){
         popups.add(popup);
     }
     
+    /**
+     * To check if an item is outside the map
+     * @param item
+     * @return 
+     */
     public boolean outOfBounds(Item item){
         return (item.getX()+10<x0 || item.getX()-10>xf || item.getY()+10<y0 || item.getY()-10>yf);
     }
@@ -297,20 +318,23 @@ public class Game implements Runnable{
                     if(dt==2)g.drawImage(Assets.door, dx, dy, -60, 200, null);
                     else g.drawImage(Assets.door1, dx, dy, 200, 60, null);
             
-                if(inDoor && contador > 1200){
+                if(inDoor && contador > 600){
                     g.setColor(Color.white);                    
                     g.drawString("Presiona ENTER para usar la puerta", player.getX(), player.getY()+120);
                 }
             
-                //HADOUKENS!!!
+                //arrows render!!!
                 for(int i = 0;i<mobs.size();i++){
                     mobs.get(i).render(g);
                 }
 
+                //spaniards render
                 for(int i = 0;i<spaniards.size();i++){
                     spaniards.get(i).render(g);
                 }
+                //player render
                 player.render(g);
+                //boss render
                 if(hasBoss){
                     boss.render(g);
                 }
@@ -319,8 +343,9 @@ public class Game implements Runnable{
                     popups.get(i).render(g);
                     if(popups.get(i).hasEnded())popups.remove(i);
                 }
-                if(contador <= 600) g.drawImage(Assets.texto1, 0, 2*getHeight()/3, getWidth(), getHeight()/3, null);
-                else if(contador >= 600 && contador <= 1200) g.drawImage(Assets.texto, 0, 2*getHeight()/3, getWidth(), getHeight()/3, null);
+                //to display initial texts
+                if(contador <= 300) g.drawImage(Assets.texto1, 0, 2*getHeight()/3, getWidth(), getHeight()/3, null);
+                else if(contador >= 300 && contador <= 600) g.drawImage(Assets.texto, 0, 2*getHeight()/3, getWidth(), getHeight()/3, null);
             }
             bs.show();
             g.dispose();
@@ -385,22 +410,42 @@ public class Game implements Runnable{
         return keyManager;
     }
   
+    /**
+     * To get the player of the game
+     * @return player
+     */
     public Player getPlayer(){
         return this.player;
     }
     
+    /**
+     * check if game state is pause
+     * @return boolean paused
+     */
     public boolean isPaused(){
         return pause;
     }
     
+    /**
+     * set the game state
+     * @param pause boolean
+     */
     public void setPause(boolean pause){
         this.pause = pause;
     }
 
+    /**
+     * To check if the player is reading the manual
+     * @return boolean manual
+     */
     public boolean isManual() {
         return manual;
     }
 
+    /**
+     * To set the game state to reading the manual
+     * @param manual boolean
+     */
     public void setManual(boolean manual) {
         this.manual = manual;
     }
@@ -426,26 +471,50 @@ public class Game implements Runnable{
         }
     }
 
+    /**
+     * get the map x inf limit
+     * @return 
+     */
     public int getX0() {
         return x0;
     }
 
+    /**
+     * get the map x final limit
+     * @return 
+     */
     public int getXf() {
         return xf;
     }
 
+    /**
+     * get the map y inf limit
+     * @return 
+     */
     public int getY0() {
         return y0;
     }
 
+    /**
+     * get the map final y limit
+     * @return 
+     */
     public int getYf() {
         return yf;
     }
 
+    /**
+     * get the map door x coord
+     * @return 
+     */
     public int getDx() {
         return dx;
     }
 
+    /**
+     * get the map door y coord
+     * @return 
+     */
     public int getDy() {
         return dy;
     }

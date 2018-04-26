@@ -75,6 +75,11 @@ public class Boss extends Item{
         actualAnimation.tick();
     }
     
+    /**
+     * to check collition with arrow
+     * @param damage the damage received
+     * @return boss state, boolean
+     */
     public boolean hurt(int damage){
         double tmp1 = Math.random()*50-25,
                tmp2 = Math.random()*3 +1,
@@ -84,11 +89,22 @@ public class Boss extends Item{
         return life<=0;
     }
     
-    private void charge(){
+    /*
+    private void charge(){                
+        //System.out.println("charging");
         int targetX = game.getPlayer().getX();
-        int targetY = game.getPlayer().getY();
+        int targetY = game.getPlayer().getY();        
+        while(targetX<=getX()+20 && targetX>=getX()+20){
+            if(getX()>game.getPlayer().getX()+game.getPlayer().getWidth())setX(getX()-20);
+            else setX(getX()+20);
+        }
         
+        while(targetY!=getY()){
+            if(getY()>game.getPlayer().getY()+game.getPlayer().getHeight())setY(getY()-20);
+            else setY(getY()+20);
+        }
     }
+    */
     
     public Collider getCollider(){
         return this.collider;
@@ -105,25 +121,15 @@ public class Boss extends Item{
     
     
     @Override
-    public void tick() {        
-        if(!charging){
-            checkDirection();
-            cont++;
-        }else{
-            charge();
-            cont=0;
-        }
+    public void tick() {            
+        checkDirection();
         collider.setX(getX()+getWidth()/2);
         collider.setY(getY()+getHeight()/2);
     }
 
     @Override
-    public void render(Graphics g) {
+    public void render(Graphics g) {    
        g.drawImage(actualAnimation.getCurrentFrame(),getX(),getY(),getWidth(),getHeight(),null);
-       if(life>(life*.7))g.setColor(Color.green);
-       else if(life>(life*.4))g.setColor(Color.yellow);
-       else g.setColor(Color.red);
        
-       g.fillRect(getX(), getY()-15, life, 10);
     }
 }
