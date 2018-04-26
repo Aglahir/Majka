@@ -44,6 +44,8 @@ public class Game implements Runnable{
     private BufferedImage mapImage;             //the image of the background in every room
     private ArrayList<Mob> mobs;                // mobs list
     private base.SoundClip hurt;                //sound to check player collition
+    private base.SoundClip wonsound;                //sound to check player collition
+    private base.SoundClip arr;                 //sound of firing arrow
     private base.SoundClip music;               //ambient music
     private ArrayList<Mob> throwableObjects;    // throwable list
     private ArrayList<Popup> popups;            // simple popups list
@@ -60,7 +62,11 @@ public class Game implements Runnable{
         popups = new ArrayList<>();
         spaniards = new ArrayList<>();
         loadMap();
-        music  = new base.SoundClip("/sounds/song.mp3", 50, true);
+        music  = new base.SoundClip("/sounds/song.WAV", -20.0f, true);
+        hurt  = new base.SoundClip("/sounds/hurt.WAV", -10.0f, false);
+        arr  = new base.SoundClip("/sounds/arrow.WAV", -10.0f, false);
+        wonsound  = new base.SoundClip("/sounds/won.WAV", -10.0f, false);
+        music.play();
         display.getJframe().addKeyListener(keyManager);                 //make the keyManager listens to keys
         display.getJframe().addMouseListener(mouseManager);
         display.getJframe().addMouseMotionListener(mouseManager);
@@ -210,6 +216,7 @@ public class Game implements Runnable{
             if(getPlayer().checkCollision(tempSpaniard.getCollider())){
                 getPlayer().collisionJump(tempSpaniard);
                 tempSpaniard.collisionJump(getPlayer());
+                hurt.play();
             }
         }
         
@@ -220,9 +227,10 @@ public class Game implements Runnable{
             if(hasBoss && tempMob.isAlive()){
                 if(tempMob.getX()>=boss.getX() && tempMob.getX()<=boss.getX()+250 && tempMob.getY()>=boss.getY() && tempMob.getY()<=boss.getY()+300){
                     tempMob.setDead();
-                    if(boss.hurt(tempMob.getDamage())){
+                    if(boss.hurt(tempMob.getDamage())){                                                
+                        wonsound.play();
                         boss = null;
-                        hasBoss = false;
+                        hasBoss = false;                        
                     }
                 }
             }
@@ -466,6 +474,7 @@ public class Game implements Runnable{
     public void addMob(int x, int y, int w, int h, int direction, int type){
         
         if(shootTimer<=0){
+            arr.play();
             mobs.add(new Mob(x,y,w,h,this,direction,type));
             shootTimer = fps/2;
         }
