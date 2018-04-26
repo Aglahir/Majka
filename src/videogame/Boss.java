@@ -18,6 +18,8 @@ public class Boss extends Item{
     private int speed;
     private int direction;              // 0-Iddle 1-Left 2-Up 3-Right 4-Down
     private int life;
+    private boolean charging;
+    private int cont;
     private Collider collider;
     /**
      * 
@@ -69,9 +71,23 @@ public class Boss extends Item{
                     setY(getY()+speed);
                     actualAnimation = Assets.spaniardDBasic;
                     break;
-        }
-        
+        }        
         actualAnimation.tick();
+    }
+    
+    public boolean hurt(int damage){
+        double tmp1 = Math.random()*50-25,
+               tmp2 = Math.random()*3 +1,
+               tmp3 = Math.random()*50-25;
+        game.createParticle(new Popup(getX()+(int)tmp1,getY()+(int)tmp3,10+(int)tmp1,10+(int)tmp1,(int)tmp2,100,9));
+        life-=damage;
+        return life<=0;
+    }
+    
+    private void charge(){
+        int targetX = game.getPlayer().getX();
+        int targetY = game.getPlayer().getY();
+        
     }
     
     public Collider getCollider(){
@@ -89,8 +105,14 @@ public class Boss extends Item{
     
     
     @Override
-    public void tick() {
-        checkDirection();
+    public void tick() {        
+        if(!charging){
+            checkDirection();
+            cont++;
+        }else{
+            charge();
+            cont=0;
+        }
         collider.setX(getX()+getWidth()/2);
         collider.setY(getY()+getHeight()/2);
     }
@@ -98,5 +120,10 @@ public class Boss extends Item{
     @Override
     public void render(Graphics g) {
        g.drawImage(actualAnimation.getCurrentFrame(),getX(),getY(),getWidth(),getHeight(),null);
+       if(life>(life*.7))g.setColor(Color.green);
+       else if(life>(life*.4))g.setColor(Color.yellow);
+       else g.setColor(Color.red);
+       
+       g.fillRect(getX(), getY()-15, life, 10);
     }
 }

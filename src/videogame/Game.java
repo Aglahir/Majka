@@ -205,6 +205,15 @@ public class Game implements Runnable{
         for(int j = 0;j<mobs.size();j++){
             Mob tempMob = mobs.get(j);
             tempMob.tick();
+            if(hasBoss && tempMob.isAlive()){
+                if(tempMob.getX()>=boss.getX() && tempMob.getX()<=boss.getX()+250 && tempMob.getY()>=boss.getY() && tempMob.getY()<=boss.getY()+300){
+                    tempMob.setDead();
+                    if(boss.hurt(tempMob.getDamage())){
+                        boss = null;
+                        hasBoss = false;
+                    }
+                }
+            }
             if(outOfBounds(tempMob)){
                 tempMob.setDead();
             }
@@ -220,10 +229,12 @@ public class Game implements Runnable{
             for(int j = 0;j<mobs.size();j++){
                 Mob tempMob = mobs.get(j);
                 
-                if(tempSpaniard.checkCollision(tempMob.getCollider())){
-                    tempSpaniard.collisionJump(tempMob);
-                    if(tempSpaniard.hurt(tempMob.getDamage())){spaniards.remove(i);break;}
-                    tempMob.setDead();
+                if(tempMob.isAlive()){
+                    if(tempSpaniard.checkCollision(tempMob.getCollider())){
+                        tempSpaniard.collisionJump(tempMob);
+                        if(tempSpaniard.hurt(tempMob.getDamage())){spaniards.remove(i);break;}
+                        tempMob.setDead();
+                    }
                 }
             }
        }
@@ -234,7 +245,7 @@ public class Game implements Runnable{
     }
     
     public boolean outOfBounds(Item item){
-        return (item.getX()<0 || item.getX()+item.getWidth()>getWidth() || item.getY()<0 || item.getY()+item.getHeight()>getHeight());
+        return (item.getX()+10<x0 || item.getX()-10>xf || item.getY()+10<y0 || item.getY()-10>yf);
     }
     
     /**
@@ -300,7 +311,9 @@ public class Game implements Runnable{
                     spaniards.get(i).render(g);
                 }
                 player.render(g);
-
+                if(hasBoss){
+                    boss.render(g);
+                }
                 // POPUPS!!! These are just rendered, no tick is needed
                 for(int i=0;i<popups.size();i++){
                     popups.get(i).render(g);

@@ -73,6 +73,10 @@ public class Mob extends Item{
         alive = false;
     }
     
+    public boolean isAlive(){
+        return alive;
+    }
+    
     public Collider getCollider(){
         return this.collider;
     }
