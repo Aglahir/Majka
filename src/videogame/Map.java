@@ -13,21 +13,22 @@ import java.awt.image.BufferedImage;
  */
 public class Map {
     //All map data
-    private int x0,xf,y0,yf,doorx,doory,playerx,playery,enem,doortype;
+    private int x0,xf,y0,yf,doorx,doory,playerx,playery,enem,doortype,scale;
     private boolean boss;
-    int index;                                                                      //the index (level) of the map
-    private BufferedImage image;                                                    //the map image
-    private static int playerX[]={611,660,50,10,385,660};                           //check the player x position
-    private static int playerY[]={336,608,336,608,336,608};                         //check the player x position
-    private static int x0s[]={27,27,27,8,385,27};                                   //check the map x start
-    private static int xfs[]={1235,1235,1235,240,1235,1235};                        //check the map x limit
-    private static int y0s[]={8,8,152,8,8,8};                                       //check the map y start
-    private static int yfs[]={608,608,400,608,608,608};                             //check the map y limit
-    private static int doorsx[]={611,1370,1370,355,611,-500};                       //check the door y position
-    private static int doorsy[]={5,300,260,330,5,-500};                             //check the door y position
-    private static int enemies[]={0,1,0,2,3,1};                                     //to check the number of enemies in the map
-    private static int doortypes[]={1,2,2,2,1,1};                                   //to check if the door is vertical or horizontal 1 and 2 respectively
-    private static boolean bosses[]={false,false,false,false,false,true};           //to check if the map has boss or not
+    int index;                                                                                                  //the index (level) of the map
+    private BufferedImage image;                                                                                //the map image
+    private static int playerX[]={611,660,50,10,385,660,10,10,500,150,50,611};                                  //check the player x position
+    private static int playerY[]={336,608,336,608,336,608,608,280,608,608,50,336};                              //check the player x position
+    private static int x0s[]={27,27,27,8,385,27,27,27,27,27,27,27};                                             //check the map x start
+    private static int xfs[]={1320,1320,1320,335,1320,1320,1320,1320,700,410,1320,1320};                        //check the map x limit
+    private static int y0s[]={60,8,152,8,8,8,8,335,8,8,8,50};                                                   //check the map y start
+    private static int yfs[]={715,715,510,715,715,715,715,715,715,715,275,715};                                 //check the map y limit
+    private static int doorsx[]={611,1370,1370,355,611,1370,1365,500,150,445,1360,1360};                        //check the door y position
+    private static int doorsy[]={5,300,260,330,5,260,280,307,5,50,50,300};                                      //check the door y position
+    private static int enemies[]={0,1,0,2,3,1,6,2,3,3,1,4};                                                     //to check the number of enemies in the map
+    private static int doortypes[]={1,2,2,2,1,2,3,4,4,3,3,3};                                                   //to check if the door is vertical or horizontal 1 and 2 respectively
+    private static int scales[]={100,100,100,100,100,90,60,60,60,50,50,50};                                     //to set the size of the player and spaniards in the map
+    private static boolean bosses[]={false,false,false,false,false,true,false,false,false,false,false,true};    //to check if the map has boss or not
     
     /**
      * constructor of the map
@@ -46,6 +47,7 @@ public class Map {
         this.enem       = enemies[index];
         this.doortype   = doortypes[index];
         this.boss       = bosses[index];
+        this.scale      = scales[index];
         this.image      = videogame.Assets.getMapImage(index);
     }
     
@@ -143,6 +145,10 @@ public class Map {
      */
     public int getDoosType(){
         return doortype;
+    }
+
+    public int getScale() {
+        return scale;
     }
     
 

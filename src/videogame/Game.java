@@ -34,23 +34,24 @@ public class Game implements Runnable{
     private Player player;                      // first player
     private int fps = 60;                       // set FPS for the thread running
     private int shootTimer = fps/2;             // delay to shoot
-    private int spacebarCooldown = 30;          //cooldown for the melee to attack again
-    private int level=0;                        //for the level of the map
-    private int x0,xf,y0,yf,dx,dy,dt,px,py;     //data for the map limits and the doors
-    private int enemies;                        //number of enemies in each map
+    private int spacebarCooldown = 30;          // cooldown for the melee to attack again
+    private int level=0;                        // for the level of the map
+    private int x0,xf,y0,yf,dx,dy,dt,px,py;     // data for the map limits and the doors
+    private int enemies;                        // number of enemies in each map
     private int contador = 0;                   // delay to shoot
+    private int scale=100;                      // to set the size of the player and spaniards
     int count=0;                                // timer for the dialogs
-    private Map map = new Map(0);               //to read the data of every map
-    private BufferedImage mapImage;             //the image of the background in every room
+    private Map map = new Map(0);               // to read the data of every map
+    private BufferedImage mapImage;             // the image of the background in every room
     private ArrayList<Mob> mobs;                // mobs list
-    private base.SoundClip hurt;                //sound to check player collition
-    private base.SoundClip wonsound;                //sound to check player collition
-    private base.SoundClip arr;                 //sound of firing arrow
-    private base.SoundClip music;               //ambient music
+    private base.SoundClip hurt;                // sound to check player collition
+    private base.SoundClip wonsound;            //sound to check player collition
+    private base.SoundClip arr;                 // sound of firing arrow
+    private base.SoundClip music;               // ambient music
     private ArrayList<Mob> throwableObjects;    // throwable list
     private ArrayList<Popup> popups;            // simple popups list
     private ArrayList<Spaniard> spaniards;      // simple spaniard list
-    private Boss boss;                          //the boss of the level
+    private Boss boss;                          // the boss of the level
     private STATE state;                        // for manage the states that the game can have
     
     //to init the resources that we will use on the game
@@ -90,20 +91,21 @@ public class Game implements Runnable{
         dt = map.getDoosType();
         px = map.getPlayerx();
         py = map.getPlayery();
-        enemies = map.getEnem();
-        hasBoss = map.hasBoss();
-        mapImage = map.getImageMap();
-        player = new Player(px,py,100,100,this);
+        scale       = map.getScale();
+        enemies     = map.getEnem();
+        hasBoss     = map.hasBoss();
+        mapImage    = map.getImageMap();
+        player      = new Player(px,py,scale,scale,this);
         spaniards.clear();
         //create enemies
         for(int i=0; i<enemies; i++){
             int enemX = ThreadLocalRandom.current().nextInt(x0, xf + 1);
             int enemY = ThreadLocalRandom.current().nextInt(y0, yf + 1);
-            spaniards.add(new Spaniard(enemX, enemY,100, 100,100, this));
+            spaniards.add(new Spaniard(enemX, enemY,scale, scale,100, this));
         }
         //if the level has boss, create it
         if(hasBoss){
-            boss = new Boss((xf-x0)/2, (yf-y0)/2, 500, 300, 2000, this);
+            boss = new Boss((xf-x0)/2, (yf-y0)/2, scale*5, scale*3, 2000, this);
         }
     }
     
@@ -170,6 +172,7 @@ public class Game implements Runnable{
     private void tick()
     {
         //System.out.println("X: "+player.getX()+" Y: "+player.getY());
+        //System.out.println(player.getHeight());
         if(this.getMouseManager().isIzquierdo()){
             if(this.getMouseManager().getX()>=482 && this.getMouseManager().getX() <= 891 && this.getMouseManager().getY()>=315 && this.getMouseManager().getY() <= 392)
                 state = STATE.game;
@@ -306,9 +309,12 @@ public class Game implements Runnable{
                 g.drawImage(Assets.mainMenu,0,0,this.getWidth(),this.getHeight(),null);
             } else if(isPaused()){ //for displaying the paused image
                 g.drawImage(mapImage, 0, 0, getWidth(), getHeight(), null);
-                if(spaniards.isEmpty())
-                if(dt==2)g.drawImage(Assets.door, dx, dy, -60, 200, null);
-                else g.drawImage(Assets.door1, dx, dy, 200, 60, null);
+                if(spaniards.isEmpty() && !hasBoss){                                    
+                    if(dt==2)g.drawImage(Assets.door, dx, dy, -60, 200, null);
+                    if(dt==1)g.drawImage(Assets.door1, dx, dy, 200, 60, null);
+                    if(dt==3)g.drawImage(Assets.door3, dx, dy, -60, 200, null);
+                    if(dt==4)g.drawImage(Assets.door4, dx, dy, 200, 60, null);
+                }
                 for(int i = 0;i<spaniards.size();i++){
                     spaniards.get(i).render(g);
                 }
@@ -320,12 +326,13 @@ public class Game implements Runnable{
                     g.drawImage(Assets.pause, 0, 0, width, height, null);
                 }
             } else if(!isPaused()){
-                g.drawImage(mapImage, 0, 0, getWidth(), getHeight(), null);
-                g.drawImage(mapImage, 0, 0, getWidth(), getHeight(), null);
-                if(spaniards.isEmpty())
+                g.drawImage(mapImage, 0, 0, getWidth()  , getHeight(), null);                
+                if(spaniards.isEmpty() && !hasBoss){                                    
                     if(dt==2)g.drawImage(Assets.door, dx, dy, -60, 200, null);
-                    else g.drawImage(Assets.door1, dx, dy, 200, 60, null);
-            
+                    if(dt==1)g.drawImage(Assets.door1, dx, dy, 200, 60, null);
+                    if(dt==3)g.drawImage(Assets.door3, dx, dy, -60, 200, null);
+                    if(dt==4)g.drawImage(Assets.door4, dx, dy, 200, 60, null);
+                }
                 if(inDoor && contador > 600){
                     g.setColor(Color.white);                    
                     g.drawString("Presiona ENTER para usar la puerta", player.getX(), player.getY()+120);
@@ -528,5 +535,12 @@ public class Game implements Runnable{
         return dy;
     }
     
+    public int getScale(){
+        return scale;
+    }
+    
+    public int getLevel(){
+        return level;
+    }
     
 }

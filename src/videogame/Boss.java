@@ -62,7 +62,7 @@ public class Boss extends Item{
         }
         
         if(getY()>game.getPlayer().getY()+2)direction=2;
-        else if(getY()+2<game.getPlayer().getY() && getY()+200<=game.getYf())direction=4;
+        else if(getY()+2<game.getPlayer().getY() && getY()+game.getScale()*3<=game.getYf())direction=4;
         
         switch(direction){
             case 2: 
@@ -99,26 +99,24 @@ public class Boss extends Item{
         
         switch(direction){
             case 1: 
-                    setX(getX()-10);
+                    setX(getX()-12);
                     actualAnimation = Assets.bossLeft;
                     break;
             case 3: 
-                    setX(getX()+10);
+                    setX(getX()+12);
                     actualAnimation = Assets.bossRight;
                     break;
         }
         
         if(getY()>targetY+2)direction=2;
-        else if(getY()+2<targetY && getY()+200<=game.getYf())direction=4;
+        else if(getY()+2<targetY && getY()+game.getScale()*3<=game.getYf())direction=4;
         
         switch(direction){
             case 2: 
-                    setY(getY()-10);
-                    //actualAnimation = Assets.spaniardUBasic;
+                    setY(getY()-12);                    
                     break;
             case 4: 
-                    setY(getY()+10);
-                    //actualAnimation = Assets.spaniardDBasic;
+                    setY(getY()+12);                    
                     break;
         }        
         actualAnimation.tick();

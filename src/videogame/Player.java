@@ -58,17 +58,17 @@ public class Player extends Item{
             speedY=0;
             setY(game.getY0()+1);
         }
-        else if(getY()>=game.getYf()){
+        else if(getY()+getHeight()>=game.getYf()){
             speedY=0;
-            setY(game.getYf()-1);
+            setY(game.getYf()-getHeight()-1);
         }
             
         if(getX()<=game.getX0()){
             speedX = 0;
             setX(game.getX0()+1);
-        }else if(getX()>=game.getXf()){
+        }else if(getX()+game.getPlayer().getWidth()>=game.getXf()){
             speedX = 0;
-            setX(game.getXf()-1);
+            setX(game.getXf()-game.getPlayer().getWidth()-1);
         }
         
         direction=0;
@@ -85,7 +85,7 @@ public class Player extends Item{
                     game.createParticle(new Popup(getX()+getWidth()/2,getY()+getHeight()+(int)tmp1,(int)tmp2,(int)tmp2,4,50,10));
                     break;
             case 3: 
-                    if(getX()<=game.getXf()){if(speedX<maxSpeed)speedX++;}
+                    if(getX()+getWidth()<=game.getXf()){if(speedX<maxSpeed)speedX++;}
                     else speedX=0;
                     minMapPosX += (float)speedX/37;
                     game.createParticle(new Popup(getX()+getWidth()/2,getY()+getHeight()+(int)tmp1,(int)tmp2,(int)tmp2,4,50,10));
@@ -110,7 +110,7 @@ public class Player extends Item{
                     game.createParticle(new Popup(getX()+(int)tmp1+getWidth()/2,getY()+getHeight()+(int)tmp1,(int)tmp2,(int)tmp2,4,50,10));
                     break;
             case 4: 
-                    if(getY()<=game.getYf()){if(speedY<maxSpeed)speedY++;}
+                    if(getY()<=game.getYf()-getHeight()){if(speedY<maxSpeed)speedY++;}
                     else speedY=0;
                     minMapPosY += (float)speedY/31;
                     game.createParticle(new Popup(getX()+(int)tmp1+getWidth()/2,getY(),(int)tmp2,(int)tmp2,4,50,10));
@@ -175,7 +175,7 @@ public class Player extends Item{
     @Override
     public void render(Graphics g) {
        g.drawImage(actualAnimation.getCurrentFrame(),getX(),getY(),getWidth(),getHeight(),null);
-       g.drawImage(Assets.minimap,game.getWidth()-250,20,game.getWidth()/6,game.getHeight()/6,null);
-       g.drawImage(actualAnimation.getCurrentFrame(),(int)minMapPosX,(int)minMapPosY,getWidth()/10,getHeight()/10,null);
+       //g.drawImage(Assets.minimap,game.getWidth()-250,20,game.getWidth()/6,game.getHeight()/6,null);
+       //g.drawImage(actualAnimation.getCurrentFrame(),(int)minMapPosX,(int)minMapPosY,getWidth()/10,getHeight()/10,null);
     }
 }
