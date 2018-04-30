@@ -62,11 +62,11 @@ public class Game implements Runnable{
         popups = new ArrayList<>();
         spaniards = new ArrayList<>();
         loadMap();
-        music  = new base.SoundClip("/sounds/song.WAV", -20.0f, true);
-        hurt  = new base.SoundClip("/sounds/hurt.WAV", -10.0f, false);
-        arr  = new base.SoundClip("/sounds/arrow.WAV", -10.0f, false);
-        wonsound  = new base.SoundClip("/sounds/won.WAV", -10.0f, false);
-        music.play();
+       // music  = new base.SoundClip("/sounds/song.WAV", -20.0f, true);
+       // hurt  = new base.SoundClip("/sounds/hurt.WAV", -10.0f, false);
+       // arr  = new base.SoundClip("/sounds/arrow.WAV", -10.0f, false);
+       // wonsound  = new base.SoundClip("/sounds/won.WAV", -10.0f, false);
+       //music.play();
         display.getJframe().addKeyListener(keyManager);                 //make the keyManager listens to keys
         display.getJframe().addMouseListener(mouseManager);
         display.getJframe().addMouseMotionListener(mouseManager);
@@ -103,7 +103,7 @@ public class Game implements Runnable{
         }
         //if the level has boss, create it
         if(hasBoss){
-            boss = new Boss((xf-x0)/2, (yf-y0)/2, 300, 300, 2000, this);
+            boss = new Boss((xf-x0)/2, (yf-y0)/2, 500, 300, 2000, this);
         }
     }
     
@@ -199,9 +199,9 @@ public class Game implements Runnable{
 
             player.tick();
             if(hasBoss)boss.tick();
-            if(player.getX() <= dx+160 && player.getX()>=dx-160 &&player.getY()<=dy+160 && player.getY()>=dy-160 && spaniards.isEmpty()){
+            if(player.getX() <= dx+160 && player.getX()>=dx-160 &&player.getY()<=dy+160 && player.getY()>=dy-160 && spaniards.isEmpty() && !hasBoss){
                 inDoor=true;
-                if(getKeyManager().Enter && contador > 12){                                    
+                if(getKeyManager().Enter && contador > 600){                                    
                     level++;
                     loadMap();
                 }
@@ -216,7 +216,7 @@ public class Game implements Runnable{
             if(getPlayer().checkCollision(tempSpaniard.getCollider())){
                 getPlayer().collisionJump(tempSpaniard);
                 tempSpaniard.collisionJump(getPlayer());
-                hurt.play();
+                //hurt.play();
             }
         }
         
@@ -225,10 +225,10 @@ public class Game implements Runnable{
             Mob tempMob = mobs.get(j);
             tempMob.tick();
             if(hasBoss && tempMob.isAlive()){
-                if(tempMob.getX()>=boss.getX() && tempMob.getX()<=boss.getX()+250 && tempMob.getY()>=boss.getY() && tempMob.getY()<=boss.getY()+300){
+                if(tempMob.getX()>=boss.getX() && tempMob.getX()<=boss.getX()+boss.getWidth() && tempMob.getY()>=boss.getY() && tempMob.getY()<=boss.getY()+boss.getHeight()){
                     tempMob.setDead();
                     if(boss.hurt(tempMob.getDamage())){                                                
-                        wonsound.play();
+                        //wonsound.play();
                         boss = null;
                         hasBoss = false;                        
                     }
@@ -474,7 +474,7 @@ public class Game implements Runnable{
     public void addMob(int x, int y, int w, int h, int direction, int type){
         
         if(shootTimer<=0){
-            arr.play();
+            //arr.play();
             mobs.add(new Mob(x,y,w,h,this,direction,type));
             shootTimer = fps/2;
         }

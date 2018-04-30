@@ -13,7 +13,7 @@ import java.awt.image.BufferedImage;
 public class Assets {
     
     public static Animation playerLBasic,playerRBasic,playerUBasic,playerDBasic, playerIddleBasic;
-    public static Animation spaniardLBasic,spaniardRBasic,spaniardUBasic,spaniardDBasic, spaniardIddleBasic;
+    public static Animation spaniardLBasic,spaniardRBasic,spaniardUBasic,spaniardDBasic, spaniardIddleBasic,bossLeft,bossRight;
     public static BufferedImage map, minimap, boom, pow, bam, cloudParticles, pause, mainMenu, manual,door,door1, texto, texto1, logo;
     public static SoundClip music;
     public static SoundClip shoot, hit, ouchEnemy, ouchPlayer;
@@ -140,6 +140,21 @@ public class Assets {
             spaniardDBasic = new Animation(down,70);
             spaniardLBasic = new Animation(left,30);
             spaniardRBasic = new Animation(right,30);
+            
+            
+            left = new BufferedImage[8];
+            right = new BufferedImage[8];
+            
+            sprites1 = new SpriteSheet(ImageLoader.loadImage("/images/snakeBossL.png"));
+            sprites2 = new SpriteSheet(ImageLoader.loadImage("/images/snakeBossR.png"));
+            
+            for(int i=0;i<8;i++){
+                left[i]=sprites1.crop(64*i, 0, 64, 32);
+                right[i]=sprites2.crop(64*i, 0, 64, 32);
+            }
+            
+            bossLeft  = new Animation(left, 60);
+            bossRight = new Animation(right, 60);
         }
         catch(Exception e)
         {

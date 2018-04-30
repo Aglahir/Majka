@@ -19,7 +19,9 @@ public class Boss extends Item{
     private int direction;              // 0-Iddle 1-Left 2-Up 3-Right 4-Down
     private int life;
     private boolean charging;
-    private int cont;
+    private int contador=0;
+    int targetX = 0;
+    int targetY = 0;
     private Collider collider;
     /**
      * 
@@ -33,7 +35,7 @@ public class Boss extends Item{
     public Boss(int x, int y, int width, int height,int life, Game game){
         super(x, y, width, height);
         this.game = game;
-        this.actualAnimation = Assets.spaniardRBasic;
+        this.actualAnimation = Assets.bossLeft;
         this.speed = 3;
         this.direction = 2;
         this.life = life;
@@ -51,11 +53,11 @@ public class Boss extends Item{
         switch(direction){
             case 1: 
                     setX(getX()-speed);
-                    actualAnimation = Assets.spaniardLBasic;
+                    actualAnimation = Assets.bossLeft;
                     break;
             case 3: 
                     setX(getX()+speed);
-                    actualAnimation = Assets.spaniardRBasic;
+                    actualAnimation = Assets.bossRight;
                     break;
         }
         
@@ -65,11 +67,11 @@ public class Boss extends Item{
         switch(direction){
             case 2: 
                     setY(getY()-speed);
-                    actualAnimation = Assets.spaniardUBasic;
+                    //actualAnimation = Assets.spaniardUBasic;
                     break;
             case 4: 
                     setY(getY()+speed);
-                    actualAnimation = Assets.spaniardDBasic;
+                    //actualAnimation = Assets.spaniardDBasic;
                     break;
         }        
         actualAnimation.tick();
@@ -81,30 +83,47 @@ public class Boss extends Item{
      * @return boss state, boolean
      */
     public boolean hurt(int damage){
-        double tmp1 = Math.random()*50-25,
-               tmp2 = Math.random()*3 +1,
-               tmp3 = Math.random()*50-25;
-        game.createParticle(new Popup(getX()+(int)tmp1,getY()+(int)tmp3,10+(int)tmp1,10+(int)tmp1,(int)tmp2,100,9));
+        double tmp1 = Math.random()*(150-25)+25,
+               tmp2 = Math.random()*(3 +1),
+               tmp3 = Math.random()*(150-25)+25;
+        game.createParticle(new Popup(getX()+(int)tmp1,getY()+(int)tmp3,30+(int)tmp1,30+(int)tmp1,(int)tmp2,100,9));
         life-=damage;
         return life<=0;
     }
     
-    /*
-    private void charge(){                
-        //System.out.println("charging");
-        int targetX = game.getPlayer().getX();
-        int targetY = game.getPlayer().getY();        
-        while(targetX<=getX()+20 && targetX>=getX()+20){
-            if(getX()>game.getPlayer().getX()+game.getPlayer().getWidth())setX(getX()-20);
-            else setX(getX()+20);
+    
+    private void charge(int targetX, int targetY){                        
+        direction=0;
+        if(getX()>targetX+game.getPlayer().getWidth())direction=1;
+        else if(getX()+getWidth()<targetX)direction=3;
+        
+        switch(direction){
+            case 1: 
+                    setX(getX()-10);
+                    actualAnimation = Assets.bossLeft;
+                    break;
+            case 3: 
+                    setX(getX()+10);
+                    actualAnimation = Assets.bossRight;
+                    break;
         }
         
-        while(targetY!=getY()){
-            if(getY()>game.getPlayer().getY()+game.getPlayer().getHeight())setY(getY()-20);
-            else setY(getY()+20);
-        }
+        if(getY()>targetY+2)direction=2;
+        else if(getY()+2<targetY && getY()+200<=game.getYf())direction=4;
+        
+        switch(direction){
+            case 2: 
+                    setY(getY()-10);
+                    //actualAnimation = Assets.spaniardUBasic;
+                    break;
+            case 4: 
+                    setY(getY()+10);
+                    //actualAnimation = Assets.spaniardDBasic;
+                    break;
+        }        
+        actualAnimation.tick();
     }
-    */
+    
     
     public Collider getCollider(){
         return this.collider;
@@ -122,7 +141,23 @@ public class Boss extends Item{
     
     @Override
     public void tick() {            
-        checkDirection();
+        //checkDirection();
+        contador++;
+        if(contador==600 && !charging){
+            targetX = game.getPlayer().getX();
+            targetY = game.getPlayer().getY();
+            charging=true;
+            contador=0;
+        }else{
+            if(contador==100 && charging){
+                charging = false;
+            }
+        }
+        if(charging){
+            charge(targetX, targetY);
+        }else{
+            checkDirection();
+        }        
         collider.setX(getX()+getWidth()/2);
         collider.setY(getY()+getHeight()/2);
     }
