@@ -3,14 +3,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Rbtote/Desktop/BETA/Majka/src/videogame/Game.java</file>
-            <file>file:/C:/Users/Rbtote/Desktop/BETA/Majka/src/videogame/Mob.java</file>
-            <file>file:/C:/Users/Rbtote/Desktop/BETA/Majka/src/videogame/Player.java</file>
-            <file>file:/C:/Users/Rbtote/Desktop/BETA/Majka/src/videogame/Boss.java</file>
-            <file>file:/C:/Users/Rbtote/Desktop/BETA/Majka/src/base/SoundClip.java</file>
-            <file>file:/C:/Users/Rbtote/Desktop/BETA/Majka/src/videogame/Assets.java</file>
-            <file>file:/C:/Users/Rbtote/Desktop/BETA/Majka/src/videogame/Spaniard.java</file>
-            <file>file:/C:/Users/Rbtote/Desktop/BETA/Majka/src/videogame/Map.java</file>
+            <file>file:/D:/ITESM/Cuarto%20semestre/Videojuegos/Majka/src/videogame/Mob.java</file>
+            <file>file:/D:/ITESM/Cuarto%20semestre/Videojuegos/Majka/src/videogame/Boss.java</file>
+            <file>file:/D:/ITESM/Cuarto%20semestre/Videojuegos/Majka/src/videogame/Game.java</file>
+            <file>file:/D:/ITESM/Cuarto%20semestre/Videojuegos/Majka/src/videogame/Map.java</file>
+            <file>file:/D:/ITESM/Cuarto%20semestre/Videojuegos/Majka/src/videogame/Assets.java</file>
         </group>
     </open-files>
 </project-private>

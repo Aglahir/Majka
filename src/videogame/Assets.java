@@ -45,6 +45,7 @@ public class Assets {
             door4 = ImageLoader.loadImage("/images/door4.png");
             texto = ImageLoader.loadImage("/images/texto.png");
             texto1 = ImageLoader.loadImage("/images/texto1.png");
+            texto2 = ImageLoader.loadImage("/images/texto2.png");
             logo = ImageLoader.loadImage("/images/mj.png");
             
             arrowUpImg = new BufferedImage[5];

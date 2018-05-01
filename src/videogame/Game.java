@@ -105,7 +105,7 @@ public class Game implements Runnable{
         }
         //if the level has boss, create it
         if(hasBoss){
-            boss = new Boss((xf-x0)/2, (yf-y0)/2, scale*5, scale*3, 2000, this);
+            boss = new Boss((xf-x0)/2, (yf-y0)/2, scale*5, scale*3, 30, this);
         }
     }
     
@@ -213,13 +213,13 @@ public class Game implements Runnable{
             }
        
             //to get the player and spaniard collition
-        for(int i = 0;i<spaniards.size();i++){
-            Spaniard tempSpaniard = spaniards.get(i);
-            tempSpaniard.tick();
-            if(getPlayer().checkCollision(tempSpaniard.getCollider())){
-                getPlayer().collisionJump(tempSpaniard);
-                tempSpaniard.collisionJump(getPlayer());
-                //hurt.play();
+            for(int i = 0;i<spaniards.size();i++){
+                Spaniard tempSpaniard = spaniards.get(i);
+                tempSpaniard.tick();
+                if(getPlayer().checkCollision(tempSpaniard.getCollider())){
+                    getPlayer().collisionJump(tempSpaniard);
+                    tempSpaniard.collisionJump(getPlayer());
+                    //hurt.play();
             }
         }
         
@@ -230,10 +230,10 @@ public class Game implements Runnable{
             if(hasBoss && tempMob.isAlive()){
                 if(tempMob.getX()>=boss.getX() && tempMob.getX()<=boss.getX()+boss.getWidth() && tempMob.getY()>=boss.getY() && tempMob.getY()<=boss.getY()+boss.getHeight()){
                     tempMob.setDead();
-                    if(boss.hurt(tempMob.getDamage())){                                                
+                    if(boss.hurt(tempMob.getDamage())){
                         //wonsound.play();
                         boss = null;
-                        hasBoss = false;                        
+                        hasBoss = false;
                     }
                 }
             }
@@ -327,17 +327,12 @@ public class Game implements Runnable{
                 }
             } else if(!isPaused()){
                 g.drawImage(mapImage, 0, 0, getWidth()  , getHeight(), null);                
-                if(spaniards.isEmpty() && !hasBoss){                                    
-                    if(dt==2)g.drawImage(Assets.door, dx, dy, -60, 200, null);
-                    if(dt==1)g.drawImage(Assets.door1, dx, dy, 200, 60, null);
-                    if(dt==3)g.drawImage(Assets.door3, dx, dy, -60, 200, null);
-                    if(dt==4)g.drawImage(Assets.door4, dx, dy, 200, 60, null);
-                }
+                
                 if(inDoor && contador > 600){
                     g.setColor(Color.white);                    
                     g.drawString("Presiona ENTER para usar la puerta", player.getX(), player.getY()+120);
                 }
-            
+                
                 //arrows render!!!
                 for(int i = 0;i<mobs.size();i++){
                     mobs.get(i).render(g);
@@ -361,6 +356,18 @@ public class Game implements Runnable{
                 //to display initial texts
                 if(contador <= 300) g.drawImage(Assets.texto1, 0, 2*getHeight()/3, getWidth(), getHeight()/3, null);
                 else if(contador >= 300 && contador <= 600) g.drawImage(Assets.texto, 0, 2*getHeight()/3, getWidth(), getHeight()/3, null);
+                
+                if(spaniards.isEmpty() && !hasBoss){                                    
+                    if(dt==2)g.drawImage(Assets.door, dx, dy, -60, 200, null);
+                    if(dt==1)g.drawImage(Assets.door1, dx, dy, 200, 60, null);
+                    if(dt==3)g.drawImage(Assets.door3, dx, dy, -60, 200, null);
+                    if(dt==4)g.drawImage(Assets.door4, dx, dy, 200, 60, null);
+                    if(level==5){
+                        g.drawImage(Assets.texto2, 0, 2*getHeight()/3, getWidth(), getHeight()/3, null);
+                    }
+                }
+               
+            
             }
             bs.show();
             g.dispose();
