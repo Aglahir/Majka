@@ -105,7 +105,7 @@ public class Game implements Runnable{
         }
         //if the level has boss, create it
         if(hasBoss){
-            boss = new Boss((xf-x0)/2, (yf-y0)/2, scale*5, scale*3, 30, this);
+            boss = new Boss((xf-x0)/2, (yf-y0)/2, scale*5, scale*3, 120, this);
         }
     }
     
@@ -234,6 +234,7 @@ public class Game implements Runnable{
                         //wonsound.play();
                         boss = null;
                         hasBoss = false;
+                        if(level==5)contador=600;
                     }
                 }
             }
@@ -345,6 +346,16 @@ public class Game implements Runnable{
                 //player render
                 player.render(g);
                 //boss render
+                if(spaniards.isEmpty() && !hasBoss){                                    
+                    if(dt==2)g.drawImage(Assets.door, dx, dy, -60, 200, null);
+                    if(dt==1)g.drawImage(Assets.door1, dx, dy, 200, 60, null);
+                    if(dt==3)g.drawImage(Assets.door3, dx, dy, -60, 200, null);
+                    if(dt==4)g.drawImage(Assets.door4, dx, dy, 200, 60, null);
+                    if(level==5){
+                        if(contador <= 900) g.drawImage(Assets.texto2, 0, 2*getHeight()/3, getWidth(), getHeight()/3, null);
+                        else if(contador >= 900 && contador <= 1150) g.drawImage(Assets.texto3, 0, 3*getHeight()/4, getWidth(), getHeight()/4, null);
+                    }
+                }
                 if(hasBoss){
                     boss.render(g);
                 }
@@ -357,17 +368,6 @@ public class Game implements Runnable{
                 if(contador <= 300) g.drawImage(Assets.texto1, 0, 2*getHeight()/3, getWidth(), getHeight()/3, null);
                 else if(contador >= 300 && contador <= 600) g.drawImage(Assets.texto, 0, 2*getHeight()/3, getWidth(), getHeight()/3, null);
                 
-                if(spaniards.isEmpty() && !hasBoss){                                    
-                    if(dt==2)g.drawImage(Assets.door, dx, dy, -60, 200, null);
-                    if(dt==1)g.drawImage(Assets.door1, dx, dy, 200, 60, null);
-                    if(dt==3)g.drawImage(Assets.door3, dx, dy, -60, 200, null);
-                    if(dt==4)g.drawImage(Assets.door4, dx, dy, 200, 60, null);
-                    if(level==5){
-                        g.drawImage(Assets.texto2, 0, 2*getHeight()/3, getWidth(), getHeight()/3, null);
-                    }
-                }
-               
-            
             }
             bs.show();
             g.dispose();

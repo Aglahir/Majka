@@ -14,7 +14,7 @@ public class Assets {
     
     public static Animation playerLBasic,playerRBasic,playerUBasic,playerDBasic, playerIddleBasic;
     public static Animation spaniardLBasic,spaniardRBasic,spaniardUBasic,spaniardDBasic, spaniardIddleBasic,bossLeft,bossRight;
-    public static BufferedImage map, minimap, boom, pow, bam, cloudParticles, pause, mainMenu, manual,door,door1,door4,door3, texto, texto1,texto2, logo;
+    public static BufferedImage map, minimap, boom, pow, bam, cloudParticles, pause, mainMenu, manual,door,door1,door4,door3, texto, texto1,texto2, texto3, logo;
     public static SoundClip music;
     public static SoundClip shoot, hit, ouchEnemy, ouchPlayer;
     public static Animation arrowUp,arrowLeft,arrowRight,arrowDown;
@@ -46,6 +46,7 @@ public class Assets {
             texto = ImageLoader.loadImage("/images/texto.png");
             texto1 = ImageLoader.loadImage("/images/texto1.png");
             texto2 = ImageLoader.loadImage("/images/texto2.png");
+            texto3 = ImageLoader.loadImage("/images/texto3.png");
             logo = ImageLoader.loadImage("/images/mj.png");
             
             arrowUpImg = new BufferedImage[5];
