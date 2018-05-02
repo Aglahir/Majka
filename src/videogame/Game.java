@@ -123,9 +123,9 @@ public class Game implements Runnable{
             hordeCount=20;
             hordeLevel=1;
             hordeMode=true;
+            Assets.music.play();
         }
         
-        Assets.music.play();
     }
     
     /**
