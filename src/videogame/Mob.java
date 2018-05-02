@@ -4,9 +4,7 @@ package videogame;
 import base.Animation;
 import base.Collider;
 import base.Item;
-import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.image.BufferedImage;
 
 /**
  *
@@ -62,6 +60,26 @@ public class Mob extends Item{
                 }
                 this.speed = 15;
                 break;
+            case 2:
+                damage = 50;
+                switch(direction){
+                    case 1: 
+                            sprite = new Animation(Assets.playerLPunch);
+                            break;
+                    case 2: 
+                            sprite = new Animation(Assets.playerUPunch);
+                            break;
+                    case 3: 
+                            sprite = new Animation(Assets.playerRPunch);
+                            break;
+                    case 4: 
+                            sprite = new Animation(Assets.playerDPunch);
+                            break;
+                    default:
+                            sprite = new Animation(Assets.playerRPunch);
+                }
+                this.speed = 0;
+                break;
         }
     }
     
@@ -103,6 +121,27 @@ public class Mob extends Item{
                             break;
                 }
             }
+        }if(type==2){
+            switch(direction){
+                case 1:
+                    setX(game.getPlayer().getX()-35);
+                    setY(game.getPlayer().getY()-4);
+                    break;
+                case 2:
+                    setX(game.getPlayer().getX()-4);
+                    setY(game.getPlayer().getY()-35);
+                    break;
+                case 3:
+                    setX(game.getPlayer().getX()+35);
+                    setY(game.getPlayer().getY()-4);
+                    break;
+                case 4:
+                    setX(game.getPlayer().getX()-4);
+                    setY(game.getPlayer().getY()+35);
+                    break;
+            }
+            
+            sprite.tick();
         }else sprite.tick();
         
         collider.setX(getX()+getWidth()/2);
@@ -111,6 +150,10 @@ public class Mob extends Item{
 
     public int getDamage(){
         return this.damage;
+    }
+    
+    public int getType(){
+        return type;
     }
     
     @Override

@@ -44,25 +44,37 @@ public class Game implements Runnable{
     private Map map = new Map(0);               // to read the data of every map
     private BufferedImage mapImage;             // the image of the background in every room
     private ArrayList<Mob> mobs;                // mobs list
-    private base.SoundClip hurt;                // sound to check player collition
-    private base.SoundClip wonsound;            //sound to check player collition
-    private base.SoundClip arr;                 // sound of firing arrow
-    private base.SoundClip music;               // ambient music
-    private ArrayList<Mob> throwableObjects;    // throwable list
     private ArrayList<Popup> popups;            // simple popups list
     private ArrayList<Spaniard> spaniards;      // simple spaniard list
     private Boss boss;                          // the boss of the level
     private STATE state;                        // for manage the states that the game can have
     
+    //Horde options
+    private boolean hordeMode;                  // state of the horde
+    private int hordeTimer;                     // timer to spawn enemies
+    private int hordeMaxTime;                   // max timer to win horde
+    private int hordeLevel;                     // 1 max to 5
+    private boolean displayNewHorde;            // flag to display horde level or not
+    private int displayNewHordeTimer;           // timer to display alert
+    private int hordeWinLevel;                  // level required to win horde
+    private ArrayList<Boss> bosses;             // Bosses
+            
     //to init the resources that we will use on the game
     private void init()
     {
+        hordeMode = false;
+        hordeTimer = fps*3;                                             //Horde spawn enemies each 3 seconds
+        hordeMaxTime = fps*60*1;                                        //Minutes of enemies
+        hordeLevel = 1;                                                 //Start horde at level 1
+        displayNewHordeTimer = fps*2;                                   //Timer to display text
+        hordeWinLevel = 3;                                              //Horde level
         display = new Display(title,getWidth(),getHeight());            //Display instanciated
         Assets.init();                                                  //Assets loaded
         mobs = new ArrayList<>();
         popups = new ArrayList<>();
         spaniards = new ArrayList<>();
         loadMap();
+        Assets.music.play();
        // music  = new base.SoundClip("/sounds/song.WAV", -20.0f, true);
        // hurt  = new base.SoundClip("/sounds/hurt.WAV", -10.0f, false);
        // arr  = new base.SoundClip("/sounds/arrow.WAV", -10.0f, false);
@@ -105,8 +117,10 @@ public class Game implements Runnable{
         }
         //if the level has boss, create it
         if(hasBoss){
-            boss = new Boss((xf-x0)/2, (yf-y0)/2, scale*5, scale*3, 120, this);
+            boss = new Boss(xf, (yf-y0)/2, scale*5, scale*3, 1000, this);
         }
+        
+        if(level==12)hordeMode=true;
     }
     
     /**
@@ -158,8 +172,7 @@ public class Game implements Runnable{
                     getKeyManager().tick();
                     tick();
                     render();
-                 } 
-                
+                 }
         }
         //End game
         stop();
@@ -171,12 +184,42 @@ public class Game implements Runnable{
      */
     private void tick()
     {
+        
+        if(hordeMode){
+            if(hordeMaxTime>0){
+                if(hordeTimer<=0){
+                    hordeTimer=fps*6 - hordeLevel;
+                    double xRandom = Math.random()*getWidth(),
+                           yRandom = Math.random()*getHeight();
+
+                    spaniards.add(new Spaniard(0,(int)yRandom,50,50,80,this));
+                    spaniards.add(new Spaniard((int)xRandom,0,50,50,80,this));
+                    spaniards.add(new Spaniard(getWidth(),(int)yRandom,50,50,80,this));
+                    spaniards.add(new Spaniard((int)xRandom,getHeight(),50,50,80,this));
+                }
+                hordeTimer--;
+                hordeMaxTime--;
+            }else{
+                if(hordeLevel==hordeWinLevel-1)
+                {
+                    Assets.music.stop();
+                    hordeMode=false;
+                    getPlayer().win();
+                }
+                hordeLevel++;
+                hordeMaxTime = fps*60*1;
+                displayNewHorde=true;
+            }
+        }
+        
         //System.out.println("X: "+player.getX()+" Y: "+player.getY());
         //System.out.println(player.getHeight());
         if(this.getMouseManager().isIzquierdo()){
-            if(this.getMouseManager().getX()>=482 && this.getMouseManager().getX() <= 891 && this.getMouseManager().getY()>=315 && this.getMouseManager().getY() <= 392)
+            if(this.getMouseManager().getX()>=482 && this.getMouseManager().getX() <= 891 && this.getMouseManager().getY()>=280 && this.getMouseManager().getY() <= 375)
                 state = STATE.game;
-            if(this.getMouseManager().getX()>=482 && this.getMouseManager().getX() <= 891 && this.getMouseManager().getY()>=520 && this.getMouseManager().getY() <= 593)
+            if(this.getMouseManager().getX()>=482 && this.getMouseManager().getX() <= 891 && this.getMouseManager().getY()>=487 && this.getMouseManager().getY() <= 570)
+                startHorde();
+            if(this.getMouseManager().getX()>=482 && this.getMouseManager().getX() <= 891 && this.getMouseManager().getY()>=585 && this.getMouseManager().getY() <= 667)
                 System.exit(0);
         }
         if(this.getKeyManager().P && state == STATE.game) {
@@ -188,16 +231,7 @@ public class Game implements Runnable{
         
         if(!this.isPaused() && state == STATE.game){ // if the game is not paused then
             contador++;
-            if(spacebarCooldown == 0){
-                if(getKeyManager().Space){
-                    spacebarCooldown = 30;
-                    double tmp1 = Math.random()*50-25,
-                           tmp2 = Math.random()*3 +1,
-                           tmp3 = Math.random()*50-25;
-                    popups.add(new Popup(getPlayer().getX()+(int)tmp1,getPlayer().getY()+(int)tmp3,10+(int)tmp1,10+(int)tmp1,(int)tmp2,100,9));
-                }
-            }else spacebarCooldown--;
-
+            if(spacebarCooldown>0)spacebarCooldown --;
             if(shootTimer>0)shootTimer --;
 
             player.tick();
@@ -216,12 +250,21 @@ public class Game implements Runnable{
             for(int i = 0;i<spaniards.size();i++){
                 Spaniard tempSpaniard = spaniards.get(i);
                 tempSpaniard.tick();
+                if(hasBoss){
+                    if(getPlayer().checkCollision(boss.getCollider())){
+                        if(!getPlayer().hitPlayer(boss)){
+                            Assets.music.stop();
+                            hordeMode=false;
+                        }
+                }}
                 if(getPlayer().checkCollision(tempSpaniard.getCollider())){
-                    getPlayer().collisionJump(tempSpaniard);
+                    if(!getPlayer().hitPlayer(tempSpaniard)){
+                        Assets.music.stop();
+                        hordeMode=false;
+                    }
                     tempSpaniard.collisionJump(getPlayer());
-                    //hurt.play();
+                }
             }
-        }
         
         //to check the arrows collition
         for(int j = 0;j<mobs.size();j++){
@@ -334,11 +377,6 @@ public class Game implements Runnable{
                     g.drawString("Presiona ENTER para usar la puerta", player.getX(), player.getY()+120);
                 }
                 
-                //arrows render!!!
-                for(int i = 0;i<mobs.size();i++){
-                    mobs.get(i).render(g);
-                }
-
                 //spaniards render
                 for(int i = 0;i<spaniards.size();i++){
                     spaniards.get(i).render(g);
@@ -364,10 +402,35 @@ public class Game implements Runnable{
                     popups.get(i).render(g);
                     if(popups.get(i).hasEnded())popups.remove(i);
                 }
-                //to display initial texts
-                if(contador <= 300) g.drawImage(Assets.texto1, 0, 2*getHeight()/3, getWidth(), getHeight()/3, null);
-                else if(contador >= 300 && contador <= 600) g.drawImage(Assets.texto, 0, 2*getHeight()/3, getWidth(), getHeight()/3, null);
                 
+                //mobs render!!!
+                for(int i = 0;i<mobs.size();i++){
+                    mobs.get(i).render(g);
+                }
+                
+                if(hordeMode){
+                    g.setColor(Color.yellow);
+                    g.setFont(new Font("Comic Sans MS", Font.BOLD, 36));
+                    g.drawString("Tiempo restante : " + hordeMaxTime/fps, getWidth()/2 - 50, 50);
+                    if(displayNewHorde){
+                        if(displayNewHordeTimer>0){
+                            spaniards.clear();
+                            g.drawString("Level UP!!!", getWidth()/2 - 50, getHeight()/2);
+                            g.drawString(""+hordeLevel, getWidth()/2 - 50, getHeight()/2 + 80);
+                        }
+                        else{
+                            displayNewHordeTimer = fps;
+                            displayNewHorde=false;
+                        }
+                    }
+                }
+                
+                
+                //to display initial texts
+                if(!hordeMode){
+                    if(contador <= 300) g.drawImage(Assets.texto1, 0, 2*getHeight()/3, getWidth(), getHeight()/3, null);
+                    else if(contador >= 300 && contador <= 600) g.drawImage(Assets.texto, 0, 2*getHeight()/3, getWidth(), getHeight()/3, null);
+                }
             }
             bs.show();
             g.dispose();
@@ -487,11 +550,7 @@ public class Game implements Runnable{
      */
     public void addMob(int x, int y, int w, int h, int direction, int type){
         
-        if(shootTimer<=0){
-            //arr.play();
-            mobs.add(new Mob(x,y,w,h,this,direction,type));
-            shootTimer = fps/2;
-        }
+        mobs.add(new Mob(x,y,w,h,this,direction,type));
     }
 
     /**
@@ -550,4 +609,42 @@ public class Game implements Runnable{
         return level;
     }
     
+    public int getPunchCooldown()
+    {
+        return spacebarCooldown;
+    }
+    
+    public void setPunchCooldown(int cooldown){
+        spacebarCooldown=cooldown;
+    }
+    
+    public int getArrowCooldown()
+    {
+        return shootTimer;
+    }
+    
+    public void setArrowCooldown(int cooldown){
+        shootTimer=cooldown;
+    }
+    
+    public void startHorde(){
+        level=12;
+        hordeWinLevel=6;
+        state = STATE.game;
+        spaniards.clear();
+        mobs.clear();
+        popups.clear();
+        contador=1000;
+        map = new Map(12);
+        loadMap();
+    }
+    
+    public void resetGame(){
+        level=0;
+        spaniards.clear();
+        mobs.clear();
+        popups.clear();
+        hordeMode=false;
+        loadMap();
+    }
 }

@@ -36,7 +36,7 @@ public class Spaniard extends Item{
         this.speedY = 0;
         this.direction = 2;
         this.life = life;
-        this.maxSpeed = 6;
+        this.maxSpeed = 2;
         this.collider = new Collider(getX()+getWidth()/2,getY()+getHeight()/2,getWidth()/2);
     }
     
@@ -128,6 +128,7 @@ public class Spaniard extends Item{
                tmp3 = Math.random()*50-25;
         game.createParticle(new Popup(getX()+(int)tmp1,getY()+(int)tmp3,10+(int)tmp1,10+(int)tmp1,(int)tmp2,100,9));
         life-=damage;
+        Assets.hitEnemySound.play();
         return life<=0;
     }
     

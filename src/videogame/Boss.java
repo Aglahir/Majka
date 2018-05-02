@@ -141,7 +141,7 @@ public class Boss extends Item{
     public void tick() {            
         //checkDirection();
         contador++;
-        if(contador==600 && !charging){
+        if(contador==400 && !charging){
             targetX = game.getPlayer().getX();
             targetY = game.getPlayer().getY();
             charging=true;
@@ -164,5 +164,7 @@ public class Boss extends Item{
     public void render(Graphics g) {    
        g.drawImage(actualAnimation.getCurrentFrame(),getX(),getY(),getWidth(),getHeight(),null);
        
+       g.setColor(Color.red);
+       g.fillRect(200, game.getHeight()-100, life, 25);
     }
 }

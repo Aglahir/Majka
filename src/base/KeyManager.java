@@ -21,6 +21,7 @@ public class KeyManager implements KeyListener{
     public boolean Down;        //Key to attack down
     public boolean Right;       //Key to attack right
     public boolean Space;       //space key 
+    public boolean CTRL;        //CTRL key
     
     private boolean keys[]; //to store all the flags for every key
     
@@ -95,6 +96,7 @@ public class KeyManager implements KeyListener{
         Enter  = keys[KeyEvent.VK_ENTER];        
         Escape = keys[KeyEvent.VK_ESCAPE];
         Space  = keys[KeyEvent.VK_SPACE];
+        CTRL = keys[KeyEvent.VK_CONTROL];
     }
     
 }
