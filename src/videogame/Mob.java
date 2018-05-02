@@ -99,6 +99,10 @@ public class Mob extends Item{
         return this.collider;
     }
     
+    public boolean checkCollision(Collider col){
+        return collider.checkCollision(col);
+    }
+    
     @Override
     public void tick() {
         

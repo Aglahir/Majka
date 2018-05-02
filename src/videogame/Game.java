@@ -41,7 +41,7 @@ public class Game implements Runnable{
     private int contador = 0;                   // delay to shoot
     private int scale=100;                      // to set the size of the player and spaniards
     int count=0;                                // timer for the dialogs
-    private Map map = new Map(0);               // to read the data of every map
+    private Map map;               // to read the data of every map
     private BufferedImage mapImage;             // the image of the background in every room
     private ArrayList<Mob> mobs;                // mobs list
     private ArrayList<Popup> popups;            // simple popups list
@@ -52,34 +52,33 @@ public class Game implements Runnable{
     //Horde options
     private boolean hordeMode;                  // state of the horde
     private int hordeTimer;                     // timer to spawn enemies
-    private int hordeMaxTime;                   // max timer to win horde
     private int hordeLevel;                     // 1 max to 5
     private boolean displayNewHorde;            // flag to display horde level or not
     private int displayNewHordeTimer;           // timer to display alert
     private int hordeWinLevel;                  // level required to win horde
-    private ArrayList<Boss> bosses;             // Bosses
-            
+    private int hordeCount;                     // countdown for enemies to kill
+    private int bossTimer;                      // timer for bosses to appear
+    private ArrayList<Boss> bosses;             // bosses arraylist
+    public int playerLifesCache = 10;           // Cache for the player to get its lifes
+    
     //to init the resources that we will use on the game
     private void init()
     {
         hordeMode = false;
         hordeTimer = fps*3;                                             //Horde spawn enemies each 3 seconds
-        hordeMaxTime = fps*60*1;                                        //Minutes of enemies
+        hordeCount = 20;                                                //Left of enemies
         hordeLevel = 1;                                                 //Start horde at level 1
         displayNewHordeTimer = fps*2;                                   //Timer to display text
+        bossTimer = fps*(4*hordeWinLevel-hordeLevel/2);               //Delay bosses
         hordeWinLevel = 3;                                              //Horde level
         display = new Display(title,getWidth(),getHeight());            //Display instanciated
         Assets.init();                                                  //Assets loaded
         mobs = new ArrayList<>();
         popups = new ArrayList<>();
         spaniards = new ArrayList<>();
+        bosses = new ArrayList<>();
         loadMap();
         Assets.music.play();
-       // music  = new base.SoundClip("/sounds/song.WAV", -20.0f, true);
-       // hurt  = new base.SoundClip("/sounds/hurt.WAV", -10.0f, false);
-       // arr  = new base.SoundClip("/sounds/arrow.WAV", -10.0f, false);
-       // wonsound  = new base.SoundClip("/sounds/won.WAV", -10.0f, false);
-       //music.play();
         display.getJframe().addKeyListener(keyManager);                 //make the keyManager listens to keys
         display.getJframe().addMouseListener(mouseManager);
         display.getJframe().addMouseMotionListener(mouseManager);
@@ -120,7 +119,13 @@ public class Game implements Runnable{
             boss = new Boss(xf, (yf-y0)/2, scale*5, scale*3, 1000, this);
         }
         
-        if(level==12)hordeMode=true;
+        if(level==12){
+            hordeCount=20;
+            hordeLevel=1;
+            hordeMode=true;
+        }
+        
+        Assets.music.play();
     }
     
     /**
@@ -186,7 +191,24 @@ public class Game implements Runnable{
     {
         
         if(hordeMode){
-            if(hordeMaxTime>0){
+            for(int i=0;i<bosses.size();i++){
+                Boss tmpBoss=bosses.get(i);
+                tmpBoss.tick();
+                if(getPlayer().checkCollision(tmpBoss.getCollider())){
+                        if(!getPlayer().hitPlayer(tmpBoss)){
+                            Assets.music.stop();
+                            hordeMode=false;
+                        }
+                }
+            }
+            if(bossTimer>0){
+                bossTimer--;
+            }
+            else{
+                bossTimer = fps*(4*hordeWinLevel-hordeLevel/2);
+                bosses.add(new Boss(xf, (yf-y0)/2, scale*4, scale*2, 1000, this));
+            }
+            if(hordeCount>0){
                 if(hordeTimer<=0){
                     hordeTimer=fps*6 - hordeLevel;
                     double xRandom = Math.random()*getWidth(),
@@ -198,16 +220,15 @@ public class Game implements Runnable{
                     spaniards.add(new Spaniard((int)xRandom,getHeight(),50,50,80,this));
                 }
                 hordeTimer--;
-                hordeMaxTime--;
             }else{
-                if(hordeLevel==hordeWinLevel-1)
+                if(hordeLevel==hordeWinLevel)
                 {
                     Assets.music.stop();
                     hordeMode=false;
                     getPlayer().win();
                 }
                 hordeLevel++;
-                hordeMaxTime = fps*60*1;
+                hordeCount = 20 + 5*hordeLevel;
                 displayNewHorde=true;
             }
         }
@@ -245,18 +266,21 @@ public class Game implements Runnable{
             }else{
                 inDoor=false;
             }
-       
+            
+            if(hasBoss){
+                if(getPlayer().checkCollision(boss.getCollider())){
+                    if(!getPlayer().hitPlayer(boss)){
+                        Assets.music.stop();
+                        hordeMode=false;
+                    }
+            }}
+            
+            
             //to get the player and spaniard collition
             for(int i = 0;i<spaniards.size();i++){
                 Spaniard tempSpaniard = spaniards.get(i);
                 tempSpaniard.tick();
-                if(hasBoss){
-                    if(getPlayer().checkCollision(boss.getCollider())){
-                        if(!getPlayer().hitPlayer(boss)){
-                            Assets.music.stop();
-                            hordeMode=false;
-                        }
-                }}
+                
                 if(getPlayer().checkCollision(tempSpaniard.getCollider())){
                     if(!getPlayer().hitPlayer(tempSpaniard)){
                         Assets.music.stop();
@@ -270,11 +294,26 @@ public class Game implements Runnable{
         for(int j = 0;j<mobs.size();j++){
             Mob tempMob = mobs.get(j);
             tempMob.tick();
+            
+            if(hordeMode && tempMob.isAlive()){
+                for(int i=0;i<bosses.size();i++){
+                    Boss tmpBoss=bosses.get(i);
+                    if(tempMob.checkCollision(tmpBoss.getCollider())){
+                        tempMob.setDead();
+                        if(tmpBoss.hurt(tempMob.getDamage())){
+                            hordeCount-=5;
+                            bosses.remove(i);
+                            i--;
+                        }
+                    }
+                }
+            }
+            
             if(hasBoss && tempMob.isAlive()){
-                if(tempMob.getX()>=boss.getX() && tempMob.getX()<=boss.getX()+boss.getWidth() && tempMob.getY()>=boss.getY() && tempMob.getY()<=boss.getY()+boss.getHeight()){
+                if(tempMob.checkCollision(boss.getCollider())){
                     tempMob.setDead();
                     if(boss.hurt(tempMob.getDamage())){
-                        //wonsound.play();
+                        hordeCount-=5;
                         boss = null;
                         hasBoss = false;
                         if(level==5)contador=600;
@@ -299,7 +338,7 @@ public class Game implements Runnable{
                 if(tempMob.isAlive()){
                     if(tempSpaniard.checkCollision(tempMob.getCollider())){
                         tempSpaniard.collisionJump(tempMob);
-                        if(tempSpaniard.hurt(tempMob.getDamage())){spaniards.remove(i);break;}
+                        if(tempSpaniard.hurt(tempMob.getDamage())){hordeCount--;spaniards.remove(i);break;}
                         tempMob.setDead();
                     }
                 }
@@ -409,11 +448,15 @@ public class Game implements Runnable{
                 }
                 
                 if(hordeMode){
+                    for(int i=0;i<bosses.size();i++){
+                        bosses.get(i).render(g);
+                    }
                     g.setColor(Color.yellow);
                     g.setFont(new Font("Comic Sans MS", Font.BOLD, 36));
-                    g.drawString("Tiempo restante : " + hordeMaxTime/fps, getWidth()/2 - 50, 50);
+                    g.drawString("Enemigos restantes : " + hordeCount, getWidth()/2 - 200, 50);
                     if(displayNewHorde){
                         if(displayNewHordeTimer>0){
+                            displayNewHordeTimer--;
                             spaniards.clear();
                             g.drawString("Level UP!!!", getWidth()/2 - 50, getHeight()/2);
                             g.drawString(""+hordeLevel, getWidth()/2 - 50, getHeight()/2 + 80);
@@ -628,15 +671,10 @@ public class Game implements Runnable{
     }
     
     public void startHorde(){
-        level=12;
-        hordeWinLevel=6;
+        level=11;
+        hordeWinLevel = 10;
         state = STATE.game;
-        spaniards.clear();
-        mobs.clear();
-        popups.clear();
-        contador=1000;
-        map = new Map(12);
-        loadMap();
+        contador = 1000;
     }
     
     public void resetGame(){
@@ -645,6 +683,15 @@ public class Game implements Runnable{
         mobs.clear();
         popups.clear();
         hordeMode=false;
+        setLifes(10);
         loadMap();
+    }
+    
+    public int getLifes(){
+        return playerLifesCache;
+    }
+    
+    public void setLifes(int lifes){
+        playerLifesCache = lifes;
     }
 }

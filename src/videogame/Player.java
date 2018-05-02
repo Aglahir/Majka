@@ -23,7 +23,10 @@ public class Player extends Item{
     private Collider collider;
     private int timerTemporalAnimation;     // This timer is made to work with any temporal animation needed
     private int playerState;                // 0: Normal, 1: Colliding, 2: Attacking Bow, 3: Attacking Melee, 4: Shield, 5: Dead, 6:Win
-    
+    private boolean isMoving;               // flag to know if its moving
+    private int shieldLifes;                // shield lifes
+    private int maxShieldLifes;             // max shield lifes
+    private int timerShield;                // timer for the shield to restart
     /**
      * 
      * @param x the x position of the player
@@ -41,10 +44,14 @@ public class Player extends Item{
         this.speedY = 0;
         this.maxSpeed = 8;
         this.direction = 3;
-        this.lifes = 10;
+        this.lifes = game.getLifes();
         this.collider = new Collider(getX()+getWidth()/2,getY()+getHeight()/2,getWidth()/2);
         this.timerTemporalAnimation = 60*3;                 // 3 seconds to restart
-        this.playerState = 0;                               //Iddle
+        this.playerState = 0;                               //Normal
+        this.isMoving = true;
+        this.maxShieldLifes = 5;
+        this.shieldLifes = this.maxShieldLifes;
+        this.timerShield = 60*3;
     }
     
     /**
@@ -141,7 +148,7 @@ public class Player extends Item{
         // Update state on collision or movement
         // 0: Normal, 1: Colliding
         int movementDirection = 0;
-        
+        isMoving = true;
         double tmp1 = Math.random()*50-25,tmp2 = Math.random()*5;
         
          //check x moving direction
@@ -163,7 +170,7 @@ public class Player extends Item{
             default:
                     if(speedX>0)speedX-=2;
                     else if(speedX<0)speedX+=2;
-                    if(actualAnimation.animationEnded())direction=0;
+                    
                     break;
         }
          //check y moving direction
@@ -184,6 +191,9 @@ public class Player extends Item{
             case 0:
                     if(speedY>0)speedY-=2;
                     else if(speedY<0)speedY+=2;
+                    
+                    isMoving=false;
+                    break;
         }
         
         //Checks collision and updates state if neccessary
@@ -204,12 +214,11 @@ public class Player extends Item{
             setX(game.getXf()-game.getPlayer().getWidth()-1);
         }
 
-        
         if(playerState==0 || actualAnimation.animationEnded()){
             playerState=0;
-            direction=movementDirection;
+            if(movementDirection!=0)direction=movementDirection;
         }
-        else if(playerState==4)direction=movementDirection;
+        
         
         setX(getX()+speedX);
         setY(getY()+speedY);
@@ -244,7 +253,9 @@ public class Player extends Item{
         
         
         if(game.getKeyManager().CTRL){
-            if(playerState!=4 && actualAnimation.animationEnded())playerState=4;
+            if(shieldLifes>0){
+                if(playerState!=4 && actualAnimation.animationEnded())playerState=4;
+            }
         }
         else{
             
@@ -295,6 +306,14 @@ public class Player extends Item{
             if(playerState!=4){
                 Assets.hitPlayerSound.play();
                 lifes--;
+                game.setLifes(lifes);
+            }else{
+                shieldLifes--;
+                if(shieldLifes<=0){
+                    Assets.hitPlayerSound.play();
+                    lifes--;
+                    game.setLifes(lifes);
+                }
             }
             collisionJump(item);
             if(lifes<=0){
@@ -312,6 +331,13 @@ public class Player extends Item{
     
     @Override
     public void tick() {
+        if(shieldLifes!=maxShieldLifes){
+            if(timerShield<=0){
+                timerShield=60*3;
+                shieldLifes = maxShieldLifes;
+            }else timerShield--;
+        }
+        
         if(playerState!=5 && playerState!=6){
             checkDirection();
             checkInput();  
@@ -319,6 +345,7 @@ public class Player extends Item{
         
         //Update Animation
         actualAnimation=getAnimation();
+        if(isMoving || playerState!=0)
         actualAnimation.tick();
         
         if(playerState==5 || playerState==6){
@@ -337,5 +364,10 @@ public class Player extends Item{
        g.drawImage(actualAnimation.getCurrentFrame(),getX(),getY(),getWidth(),getHeight(),null);
        for(int i=0;i<lifes;i++)
             g.drawImage(Assets.heart,3*game.getWidth()/4 + 30*i,30,30,30,null);
+       
+       for(int i=0;i<shieldLifes;i++){
+           g.setColor(Color.cyan);
+           g.fillOval(20 + i*30, 30, 30, 30);
+       }
     }
 }

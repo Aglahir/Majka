@@ -261,11 +261,11 @@ public class Assets {
                 right[i]=sprites2.crop(64*i, 0, 64, 32);
             }
             
-            playerLPunch = new Animation(left,10);
-            playerRPunch = new Animation(right,10);
+            playerLPunch = new Animation(left,0);
+            playerRPunch = new Animation(right,0);
             
-            playerUPunch = new Animation(up,20);
-            playerDPunch = new Animation(down,20);
+            playerUPunch = new Animation(up,10);
+            playerDPunch = new Animation(down,10);
             
             //Player dead animation
             sprites1 = new SpriteSheet(ImageLoader.loadImage("/images/playerDeath.png"));
