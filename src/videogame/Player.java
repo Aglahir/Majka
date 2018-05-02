@@ -49,7 +49,7 @@ public class Player extends Item{
         this.timerTemporalAnimation = 60*3;                 // 3 seconds to restart
         this.playerState = 0;                               //Normal
         this.isMoving = true;
-        this.maxShieldLifes = 5;
+        this.maxShieldLifes = 10;
         this.shieldLifes = this.maxShieldLifes;
         this.timerShield = 60*3;
     }
@@ -252,9 +252,9 @@ public class Player extends Item{
     private void checkInput() {
         
         
-        if(game.getKeyManager().CTRL){
+        if(game.getKeyManager().CTRL && game.getLevel()>=5){
             if(shieldLifes>0){
-                if(playerState!=4 && actualAnimation.animationEnded())playerState=4;
+                playerState=4;
             }
         }
         else{
@@ -289,10 +289,10 @@ public class Player extends Item{
                 }
             }
             
-            if(game.getKeyManager().Space && game.getPunchCooldown() == 0){
+            if(game.getKeyManager().Space && game.getPunchCooldown() == 0 && game.getLevel()>=5){
                 playerState=3;
                 game.addMob(getX()-4, getY()-4, getWidth()+8, getHeight()+8, direction, 2);
-                game.setPunchCooldown(20);
+                game.setPunchCooldown(30);
             }
         }
     }
@@ -363,11 +363,11 @@ public class Player extends Item{
     public void render(Graphics g) {
        g.drawImage(actualAnimation.getCurrentFrame(),getX(),getY(),getWidth(),getHeight(),null);
        for(int i=0;i<lifes;i++)
-            g.drawImage(Assets.heart,3*game.getWidth()/4 + 30*i,30,30,30,null);
+            g.drawImage(Assets.heart,20 + 30*i,30,30,30,null);
        
        for(int i=0;i<shieldLifes;i++){
            g.setColor(Color.cyan);
-           g.fillOval(20 + i*30, 30, 30, 30);
+           g.fillOval(20 + i*30, 60, 30, 30);
        }
     }
 }

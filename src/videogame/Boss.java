@@ -36,7 +36,7 @@ public class Boss extends Item{
         super(x, y, width, height);
         this.game = game;
         this.actualAnimation = Assets.bossLeft;
-        this.speed = 3;
+        this.speed = 2;
         this.direction = 2;
         this.life = life;
         this.collider = new Collider(getX()+getWidth()/2,getY()+getHeight()/2,getWidth()/2);
@@ -158,6 +158,18 @@ public class Boss extends Item{
         }        
         collider.setX(getX()+getWidth()/2);
         collider.setY(getY()+getHeight()/2);
+    }
+    
+    public void collisionJump(Item item) {
+        if(getX()<item.getX())speed-=10;
+        else speed+=10;
+        setX(getX()+speed);
+        
+        if(getY()<item.getY())speed-=10;
+        else speed+=10;
+        setY(getY()+speed);
+        
+        speed=2;
     }
 
     @Override

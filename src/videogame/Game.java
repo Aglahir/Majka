@@ -34,7 +34,7 @@ public class Game implements Runnable{
     private Player player;                      // first player
     private int fps = 60;                       // set FPS for the thread running
     private int shootTimer = fps/2;             // delay to shoot
-    private int spacebarCooldown = 30;          // cooldown for the melee to attack again
+    private int spacebarCooldown = 60;          // cooldown for the melee to attack again
     private int level=0;                        // for the level of the map
     private int x0,xf,y0,yf,dx,dy,dt,px,py;     // data for the map limits and the doors
     private int enemies;                        // number of enemies in each map
@@ -59,7 +59,7 @@ public class Game implements Runnable{
     private int hordeCount;                     // countdown for enemies to kill
     private int bossTimer;                      // timer for bosses to appear
     private ArrayList<Boss> bosses;             // bosses arraylist
-    public int playerLifesCache = 10;           // Cache for the player to get its lifes
+    public int playerLifesCache = 15;           // Cache for the player to get its lifes
     
     //to init the resources that we will use on the game
     private void init()
@@ -69,7 +69,7 @@ public class Game implements Runnable{
         hordeCount = 20;                                                //Left of enemies
         hordeLevel = 1;                                                 //Start horde at level 1
         displayNewHordeTimer = fps*2;                                   //Timer to display text
-        bossTimer = fps*(4*hordeWinLevel-hordeLevel/2);               //Delay bosses
+        bossTimer = fps*(4*hordeWinLevel-hordeLevel/2);                 //Delay bosses
         hordeWinLevel = 3;                                              //Horde level
         display = new Display(title,getWidth(),getHeight());            //Display instanciated
         Assets.init();                                                  //Assets loaded
@@ -195,10 +195,12 @@ public class Game implements Runnable{
                 Boss tmpBoss=bosses.get(i);
                 tmpBoss.tick();
                 if(getPlayer().checkCollision(tmpBoss.getCollider())){
-                        if(!getPlayer().hitPlayer(tmpBoss)){
-                            Assets.music.stop();
-                            hordeMode=false;
-                        }
+                    getPlayer().collisionJump(tmpBoss);
+                    tmpBoss.collisionJump(getPlayer());
+                    if(!getPlayer().hitPlayer(tmpBoss)){
+                        Assets.music.stop();
+                        hordeMode=false;
+                    }
                 }
             }
             if(bossTimer>0){
@@ -206,7 +208,10 @@ public class Game implements Runnable{
             }
             else{
                 bossTimer = fps*(4*hordeWinLevel-hordeLevel/2);
-                bosses.add(new Boss(xf, (yf-y0)/2, scale*4, scale*2, 1000, this));
+                if(hordeLevel>5){
+                    bosses.add(new Boss(0, (yf-y0)/2, scale*4, scale*2, 500, this));
+                }
+                bosses.add(new Boss(xf, (yf-y0)/2, scale*4, scale*2, 500, this));
             }
             if(hordeCount>0){
                 if(hordeTimer<=0){
@@ -269,6 +274,7 @@ public class Game implements Runnable{
             
             if(hasBoss){
                 if(getPlayer().checkCollision(boss.getCollider())){
+                    getPlayer().collisionJump(boss);
                     if(!getPlayer().hitPlayer(boss)){
                         Assets.music.stop();
                         hordeMode=false;
@@ -280,17 +286,19 @@ public class Game implements Runnable{
             for(int i = 0;i<spaniards.size();i++){
                 Spaniard tempSpaniard = spaniards.get(i);
                 tempSpaniard.tick();
-                
-                if(getPlayer().checkCollision(tempSpaniard.getCollider())){
-                    if(!getPlayer().hitPlayer(tempSpaniard)){
-                        Assets.music.stop();
-                        hordeMode=false;
+                if(hordeLevel!=hordeWinLevel)
+                {
+                    if(getPlayer().checkCollision(tempSpaniard.getCollider())){
+                        if(!getPlayer().hitPlayer(tempSpaniard)){
+                            Assets.music.stop();
+                            hordeMode=false;
+                        }
+                        tempSpaniard.collisionJump(getPlayer());
                     }
-                    tempSpaniard.collisionJump(getPlayer());
                 }
             }
         
-        //to check the arrows collition
+        //to check the arrows collision
         for(int j = 0;j<mobs.size();j++){
             Mob tempMob = mobs.get(j);
             tempMob.tick();
@@ -682,6 +690,7 @@ public class Game implements Runnable{
         spaniards.clear();
         mobs.clear();
         popups.clear();
+        bosses.clear();
         hordeMode=false;
         setLifes(10);
         loadMap();

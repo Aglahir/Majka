@@ -128,20 +128,20 @@ public class Mob extends Item{
         }if(type==2){
             switch(direction){
                 case 1:
-                    setX(game.getPlayer().getX()-35);
+                    setX(game.getPlayer().getX()-50);
                     setY(game.getPlayer().getY()-4);
                     break;
                 case 2:
                     setX(game.getPlayer().getX()-4);
-                    setY(game.getPlayer().getY()-35);
+                    setY(game.getPlayer().getY()-50);
                     break;
                 case 3:
-                    setX(game.getPlayer().getX()+35);
+                    setX(game.getPlayer().getX()+50);
                     setY(game.getPlayer().getY()-4);
                     break;
                 case 4:
                     setX(game.getPlayer().getX()-4);
-                    setY(game.getPlayer().getY()+35);
+                    setY(game.getPlayer().getY()+50);
                     break;
             }
             
