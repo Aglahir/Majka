@@ -241,11 +241,11 @@ public class Game implements Runnable{
         //System.out.println("X: "+player.getX()+" Y: "+player.getY());
         //System.out.println(player.getHeight());
         if(this.getMouseManager().isIzquierdo()){
-            if(this.getMouseManager().getX()>=482 && this.getMouseManager().getX() <= 891 && this.getMouseManager().getY()>=280 && this.getMouseManager().getY() <= 375)
+            if(this.getMouseManager().getX()>=482 && this.getMouseManager().getX() <= 891 && this.getMouseManager().getY()>=310 && this.getMouseManager().getY() <= 399)
                 state = STATE.game;
-            if(this.getMouseManager().getX()>=482 && this.getMouseManager().getX() <= 891 && this.getMouseManager().getY()>=487 && this.getMouseManager().getY() <= 570)
+            if(this.getMouseManager().getX()>=482 && this.getMouseManager().getX() <= 891 && this.getMouseManager().getY()>=412 && this.getMouseManager().getY() <= 491)
                 startHorde();
-            if(this.getMouseManager().getX()>=482 && this.getMouseManager().getX() <= 891 && this.getMouseManager().getY()>=585 && this.getMouseManager().getY() <= 667)
+            if(this.getMouseManager().getX()>=482 && this.getMouseManager().getX() <= 891 && this.getMouseManager().getY()>=504 && this.getMouseManager().getY() <= 590)
                 System.exit(0);
         }
         if(this.getKeyManager().P && state == STATE.game) {
