@@ -39,7 +39,7 @@ public class Boss extends Item{
         this.speed = 2;
         this.direction = 2;
         this.life = life;
-        this.collider = new Collider(getX()+getWidth()/2,getY()+getHeight()/2,getWidth()/2);
+        this.collider = new Collider(getX()+getWidth()/2,getY()+getHeight()/2,getHeight()/2 - 5);
     }
     
     /**
@@ -88,6 +88,7 @@ public class Boss extends Item{
                tmp3 = Math.random()*(150-25)+25;
         game.createParticle(new Popup(getX()+(int)tmp1,getY()+(int)tmp3,30+(int)tmp1,30+(int)tmp1,(int)tmp2,100,9));
         life-=damage;
+        Assets.snakehit.play();
         return life<=0;
     }
     

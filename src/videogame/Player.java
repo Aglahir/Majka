@@ -27,6 +27,7 @@ public class Player extends Item{
     private int shieldLifes;                // shield lifes
     private int maxShieldLifes;             // max shield lifes
     private int timerShield;                // timer for the shield to restart
+    private int timerPlayerHit;             
     /**
      * 
      * @param x the x position of the player
@@ -302,7 +303,7 @@ public class Player extends Item{
      * @return 
      */
     public boolean hitPlayer(Item item){
-        if(playerState!=5){
+        if(playerState!=5 && game.hitAvailable()){
             if(playerState!=4){
                 Assets.hitPlayerSound.play();
                 lifes--;
@@ -365,6 +366,7 @@ public class Player extends Item{
        for(int i=0;i<lifes;i++)
             g.drawImage(Assets.heart,20 + 30*i,30,30,30,null);
        
+       if(game.getLevel()>5)
        for(int i=0;i<shieldLifes;i++){
            g.setColor(Color.cyan);
            g.fillOval(20 + i*30, 60, 30, 30);

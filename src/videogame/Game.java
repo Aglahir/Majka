@@ -59,7 +59,8 @@ public class Game implements Runnable{
     private int hordeCount;                     // countdown for enemies to kill
     private int bossTimer;                      // timer for bosses to appear
     private ArrayList<Boss> bosses;             // bosses arraylist
-    public int playerLifesCache = 15;           // Cache for the player to get its lifes
+    private int playerLifesCache = 15;           // Cache for the player to get its lifes
+    private int playerHitTimer;
     
     //to init the resources that we will use on the game
     private void init()
@@ -71,6 +72,7 @@ public class Game implements Runnable{
         displayNewHordeTimer = fps*2;                                   //Timer to display text
         bossTimer = fps*(4*hordeWinLevel-hordeLevel/2);                 //Delay bosses
         hordeWinLevel = 3;                                              //Horde level
+        playerHitTimer = fps/2;
         display = new Display(title,getWidth(),getHeight());            //Display instanciated
         Assets.init();                                                  //Assets loaded
         mobs = new ArrayList<>();
@@ -117,6 +119,7 @@ public class Game implements Runnable{
         //if the level has boss, create it
         if(hasBoss){
             boss = new Boss(xf, (yf-y0)/2, scale*5, scale*3, 1000, this);
+            Assets.snakehiss.play();
         }
         
         if(level==12){
@@ -124,6 +127,10 @@ public class Game implements Runnable{
             hordeLevel=1;
             hordeMode=true;
             Assets.music.play();
+        }
+        
+        if(level==6){
+            playerLifesCache = 17;
         }
         
     }
@@ -189,8 +196,9 @@ public class Game implements Runnable{
      */
     private void tick()
     {
+        if(playerHitTimer>0)playerHitTimer--;
         
-        if(hordeMode){
+        if(hordeMode && !isPaused()){
             for(int i=0;i<bosses.size();i++){
                 Boss tmpBoss=bosses.get(i);
                 tmpBoss.tick();
@@ -198,9 +206,9 @@ public class Game implements Runnable{
                     getPlayer().collisionJump(tmpBoss);
                     tmpBoss.collisionJump(getPlayer());
                     if(!getPlayer().hitPlayer(tmpBoss)){
-                        Assets.music.stop();
                         hordeMode=false;
                     }
+                    if(playerHitTimer<=0)playerHitTimer = fps/2;
                 }
             }
             if(bossTimer>0){
@@ -228,7 +236,6 @@ public class Game implements Runnable{
             }else{
                 if(hordeLevel==hordeWinLevel)
                 {
-                    Assets.music.stop();
                     hordeMode=false;
                     getPlayer().win();
                 }
@@ -238,8 +245,6 @@ public class Game implements Runnable{
             }
         }
         
-        //System.out.println("X: "+player.getX()+" Y: "+player.getY());
-        //System.out.println(player.getHeight());
         if(this.getMouseManager().isIzquierdo()){
             if(this.getMouseManager().getX()>=482 && this.getMouseManager().getX() <= 891 && this.getMouseManager().getY()>=310 && this.getMouseManager().getY() <= 399)
                 state = STATE.game;
@@ -276,9 +281,9 @@ public class Game implements Runnable{
                 if(getPlayer().checkCollision(boss.getCollider())){
                     getPlayer().collisionJump(boss);
                     if(!getPlayer().hitPlayer(boss)){
-                        Assets.music.stop();
                         hordeMode=false;
                     }
+                    if(playerHitTimer<=0)playerHitTimer = fps/2;
             }}
             
             
@@ -290,10 +295,10 @@ public class Game implements Runnable{
                 {
                     if(getPlayer().checkCollision(tempSpaniard.getCollider())){
                         if(!getPlayer().hitPlayer(tempSpaniard)){
-                            Assets.music.stop();
                             hordeMode=false;
                         }
                         tempSpaniard.collisionJump(getPlayer());
+                        if(playerHitTimer<=0)playerHitTimer = fps/2;
                     }
                 }
             }
@@ -411,17 +416,17 @@ public class Game implements Runnable{
                 }
                 player.render(g);
                 if(isManual()){
-                    g.drawImage(Assets.manual, 0, 0, width, height, null);
+                    g.drawImage(Assets.manual, getWidth()/2 - 300, 100, 600, 400, null);
                 }
                 else{
-                    g.drawImage(Assets.pause, 0, 0, width, height, null);
+                    g.drawImage(Assets.pause, getWidth()/2 - 300, 100, 600, 400, null);
                 }
             } else if(!isPaused()){
                 g.drawImage(mapImage, 0, 0, getWidth()  , getHeight(), null);                
                 
                 if(inDoor && contador > 600){
                     g.setColor(Color.white);                    
-                    g.drawString("Presiona ENTER para usar la puerta", player.getX(), player.getY()+120);
+                    g.drawImage(Assets.enter, player.getX()+player.getWidth()+15, player.getY(),100,140,null);
                 }
                 
                 //spaniards render
@@ -694,6 +699,10 @@ public class Game implements Runnable{
         hordeMode=false;
         setLifes(10);
         loadMap();
+    }
+    
+    public boolean hitAvailable(){
+        return playerHitTimer<=0;
     }
     
     public int getLifes(){

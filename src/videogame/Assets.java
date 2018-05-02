@@ -19,8 +19,8 @@ public class Assets {
     public static Animation playerLPunch,playerRPunch,playerUPunch,playerDPunch;
     public static Animation playerDead,playerWin;
     public static Animation spaniardLBasic,spaniardRBasic,spaniardUBasic,spaniardDBasic, spaniardIddleBasic,bossLeft,bossRight;
-    public static BufferedImage map, minimap, boom, pow, bam, cloudParticles, pause, mainMenu, manual,door,door1,door4,door3, texto, texto1,texto2, texto3, logo,heart;
-    public static SoundClip music;
+    public static BufferedImage map, minimap, boom, pow, bam, cloudParticles, pause, mainMenu, manual,door,door1,door4,door3, texto, texto1,texto2, texto3, logo,heart,enter;
+    public static SoundClip music,snakehiss,snakehit;
     public static SoundClip shootPlayerSound, shootEnemySound, hitPlayerSound,hitEnemySound, winSound, loseSound;
     public static Animation arrowUp,arrowLeft,arrowRight,arrowDown;
     
@@ -35,12 +35,14 @@ public class Assets {
     public static void init()
     {
         try{
+            snakehiss = new SoundClip("/sounds/snakehiss.wav",6.00f,false);
+            snakehit = new SoundClip("/sounds/snakehit.wav",6.00f,false);
             shootPlayerSound = new SoundClip("/sounds/arrow.wav",0,false);
             hitEnemySound = new SoundClip("/sounds/hurt.wav",0,false);
             hitPlayerSound = new SoundClip("/sounds/hitPlayer.wav",0,false);
-            winSound = new SoundClip("/sounds/won.wav",0,false);
-            loseSound = new SoundClip("/sounds/gameover.wav",0,false);
-            music = new SoundClip("/sounds/soundtrack.wav",0,true);
+            winSound = new SoundClip("/sounds/won.wav",6.00f,false);
+            loseSound = new SoundClip("/sounds/gameover.wav",6.00f,false);
+            music = new SoundClip("/sounds/soundtrack.wav",-3.00f,true);
             
             BufferedImage up[],down[],left[],right[],iddleBasic[];
             BufferedImage arrowUpImg[],arrowLeftImg[],arrowRightImg[],arrowDownImg[];
@@ -59,7 +61,7 @@ public class Assets {
             cloudParticles = ImageLoader.loadImage("/images/cloud_particles.png");
             pause = ImageLoader.loadImage("/images/Pausa1.png");
             mainMenu = ImageLoader.loadImage("/images/MainMenu1.jpg");
-            manual = ImageLoader.loadImage("/images/tutorial.png");
+            manual = ImageLoader.loadImage("/images/tutorial1.png");
             door = ImageLoader.loadImage("/images/door.png");
             door1 = ImageLoader.loadImage("/images/door1.png");
             door3 = ImageLoader.loadImage("/images/door3.png");
@@ -70,7 +72,7 @@ public class Assets {
             texto3 = ImageLoader.loadImage("/images/texto3.png");
             logo = ImageLoader.loadImage("/images/mj.png");
             heart = ImageLoader.loadImage("/images/heart.png");
-            
+            enter = ImageLoader.loadImage("/images/enter.png");
             arrowUpImg = new BufferedImage[5];
             arrowLeftImg = new BufferedImage[5];
             arrowRightImg = new BufferedImage[5];
